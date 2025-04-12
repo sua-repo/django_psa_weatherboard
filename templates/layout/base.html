@@ -1,0 +1,29 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+  {% block head %}{% endblock head %} 
+
+    <body>
+      {% block navi %} {% include "layout/navbar.html" %} {% endblock %}
+
+      {% block header %}{% endblock header %}
+
+
+      <!-- 기본 템플릿 안에 삽입될 내용 Start -->
+      {% block content %} {% endblock content %}
+      <!-- 기본 템플릿 안에 삽입될 내용 End -->
+
+
+      {% block footer %} {% include "layout/footer.html" %} {% endblock footer %}
+
+
+      <!-- 자바 스크립트 Start -->
+      <!-- 필수 JS -->
+      <script src="{% static 'adminlte/assets/jquery/jquery.min.js' %}"></script>
+      <script src="{% static 'adminlte/js/adminlte.js' %}"></script>
+      {% block script %} {% endblock script %}
+      <!-- 자바 스크립트 End -->
+    </body>
+</html>
