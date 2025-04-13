@@ -3,12 +3,15 @@
 <!DOCTYPE html>
 
 <html lang="en">
-  {% block head %}{% endblock head %} 
+
+  {% block head %}
+    {% include "layout/head.html" %}
+  {% endblock head %} 
 
     <body>
       {% block navi %} {% include "layout/navbar.html" %} {% endblock %}
 
-      {% block header %}{% endblock header %}
+      {% block header %} {% include "layout/header.html" %} {% endblock header %}
 
 
       <!-- 기본 템플릿 안에 삽입될 내용 Start -->

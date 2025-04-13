@@ -2,6 +2,19 @@
 
 {% block title %}홈 - 뭐입지?{% endblock title %}
 
+{% block head %}
+    {% include "layout/head.html" %}
+{% endblock head %} 
+
+{% block navi %}
+    {% include "layout/navbar.html" %}
+    <div class="d-flex flex-column vh-100 justify-content-between">
+{% endblock navi %}
+
+{% block header %}
+    {% include "layout/header.html" %}
+{% endblock header %}
+
 {% block content %}
 <!-- 홈 화면 콘텐츠 Start -->
 
