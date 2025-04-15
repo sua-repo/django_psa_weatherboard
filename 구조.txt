@@ -1,0 +1,158 @@
+폴더 PATH의 목록입니다.
+볼륨 일련 번호는 3C4D-6AE4입니다.
+C:.
+│  .env
+│  .gitignore
+│  db.sqlite3
+│  manage.py
+│  requirements.txt
+│  구조.txt
+│  기본명령어_모음.md
+│  기본환경설정_설명.md
+│  단원설명.md
+│  
+├─.vscode
+│      launch.json
+│      settings.json
+│      
+├─config
+│  │  asgi.py
+│  │  settings.py
+│  │  urls.py
+│  │  wsgi.py
+│  │  __init__.py
+│  │  
+│  └─__pycache__
+│          settings.cpython-310.pyc
+│          urls.cpython-310.pyc
+│          wsgi.cpython-310.pyc
+│          __init__.cpython-310.pyc
+│          
+├─game
+│  │  admin.py
+│  │  apps.py
+│  │  models.py
+│  │  tests.py
+│  │  urls.py
+│  │  views.py
+│  │  __init__.py
+│  │  
+│  ├─migrations
+│  │  │  __init__.py
+│  │  │  
+│  │  └─__pycache__
+│  │          __init__.cpython-310.pyc
+│  │          
+│  └─__pycache__
+│          admin.cpython-310.pyc
+│          apps.cpython-310.pyc
+│          models.cpython-310.pyc
+│          urls.cpython-310.pyc
+│          views.cpython-310.pyc
+│          __init__.cpython-310.pyc
+│          
+├─main
+│  │  admin.py
+│  │  apps.py
+│  │  models.py
+│  │  tests.py
+│  │  urls.py
+│  │  views.py
+│  │  __init__.py
+│  │  
+│  ├─migrations
+│  │  │  __init__.py
+│  │  │  
+│  │  └─__pycache__
+│  │          __init__.cpython-310.pyc
+│  │          
+│  └─__pycache__
+│          admin.cpython-310.pyc
+│          apps.cpython-310.pyc
+│          models.cpython-310.pyc
+│          urls.cpython-310.pyc
+│          views.cpython-310.pyc
+│          __init__.cpython-310.pyc
+│          
+├─static
+│  ├─adminlte
+│  │  ├─assets
+│  │  │  │  favicon.ico
+│  │  │  │  
+│  │  │  └─img
+│  │  │      │  AdminLTEFullLogo.png
+│  │  │      │  AdminLTELogo.png
+│  │  │      │  avatar.png
+│  │  │      │  avatar2.png
+│  │  │      │  avatar3.png
+│  │  │      │  avatar4.png
+│  │  │      │  avatar5.png
+│  │  │      │  boxed-bg.jpg
+│  │  │      │  boxed-bg.png
+│  │  │      │  default-150x150.png
+│  │  │      │  icons.png
+│  │  │      │  photo1.png
+│  │  │      │  photo2.png
+│  │  │      │  photo3.jpg
+│  │  │      │  photo4.jpg
+│  │  │      │  prod-1.jpg
+│  │  │      │  prod-2.jpg
+│  │  │      │  prod-3.jpg
+│  │  │      │  prod-4.jpg
+│  │  │      │  prod-5.jpg
+│  │  │      │  user1-128x128.jpg
+│  │  │      │  user2-160x160.jpg
+│  │  │      │  user3-128x128.jpg
+│  │  │      │  user4-128x128.jpg
+│  │  │      │  user5-128x128.jpg
+│  │  │      │  user6-128x128.jpg
+│  │  │      │  user7-128x128.jpg
+│  │  │      │  user8-128x128.jpg
+│  │  │      │  
+│  │  │      └─credit
+│  │  │              american-express.png
+│  │  │              cirrus.png
+│  │  │              mastercard.png
+│  │  │              paypal.png
+│  │  │              paypal2.png
+│  │  │              visa.png
+│  │  │              
+│  │  ├─css
+│  │  │      adminlte.css
+│  │  │      adminlte.css.map
+│  │  │      adminlte.min.css
+│  │  │      adminlte.min.css.map
+│  │  │      adminlte.rtl.css
+│  │  │      adminlte.rtl.css.map
+│  │  │      adminlte.rtl.min.css
+│  │  │      adminlte.rtl.min.css.map
+│  │  │      
+│  │  └─js
+│  │          adminlte.js
+│  │          adminlte.js.map
+│  │          adminlte.min.js
+│  │          adminlte.min.js.map
+│  │          
+│  └─game
+│      └─rsp
+│              gomdori.png
+│              paper.jpg
+│              rock.jpg
+│              scissor.jpg
+│              
+└─templates
+    │  test-dropdown.html
+    │  
+    ├─game
+    │      rsp.html
+    │      
+    ├─layout
+    │      base.html
+    │      footer.html
+    │      head.html
+    │      header.html
+    │      navbar.html
+    │      
+    └─main
+            index.html
+            

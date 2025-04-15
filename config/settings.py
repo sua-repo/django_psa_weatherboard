@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'main', # dev_2 : 홈화면 앱 추가
+    "main",  # dev_2 : 홈화면 앱 추가
+    "game",  # dev_3 : 게임 앱 추가
 ]
 
 MIDDLEWARE = [
@@ -56,7 +57,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, 'templates')],  # 루트 폴더에 templates 지정
+        "DIRS": [os.path.join(BASE_DIR, "templates")],  # 루트 폴더에 templates 지정
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -105,9 +106,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ko-kr"  # 한국어
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Seoul"  # 한국 시간대
 
 USE_I18N = True
 
@@ -126,8 +127,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # dev_3
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # 반드시 있어야 함
+    BASE_DIR / "static",  # 반드시 있어야 함
 ]

@@ -1,55 +1,58 @@
 {% load static %}
 
-<!-- Navigation-->
-<nav class="main-header navbar navbar-expand navbar-white navbar-light" style="background-color: #e3f2fd;" data-bs-theme="light">
-    <!-- 왼쪽: 로고 -->
-    <ul class="navbar-nav">
-        <li class="nav-item d-flex align-items-center">
-        <a href="{% url 'main:index' %}" class="nav-link d-flex align-items-center">
-            <img src="{% static 'adminlte/assets/favicon.ico' %}" alt="로고" width="20" height="20" class="me-2">
-            <strong>뭐입지?</strong>
-        </a>
-        </li>
-    </ul>
+<!-- Navigation -->
+<nav class="main-header navbar navbar-expand-lg navbar-white navbar-light" style="background-color: #e3f2fd;" data-bs-theme="light">
+    <div class="container-fluid">
+        <!-- 왼쪽: 로고 -->
+        <ul class="navbar-nav">
 
-    <!-- 중앙: 네비 메뉴 -->
-    <ul class="navbar-nav ms-3" >
-        <li class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">게시판</a>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">일반</a></li>
-                <li><a class="dropdown-item" href="#">코디</a></li>
-            </ul>
-        </li>
-        <li class="nav-item dropdown">
-            <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">미니게임</a>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">가위바위보</a></li>
-                <li><a class="dropdown-item" href="#">로또</a></li>
-            </ul>
-        </li>
-    </ul>
-
-    <!-- 오른쪽: 로그인/로그아웃 -->
-    <ul class="navbar-nav ms-auto me-3">
-        <!-- {# {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a href="#" class="nav-link">로그아웃</a>
+            <li class="nav-item d-flex align-items-center">
+                <a href="{% url 'main:index' %}" class="nav-link d-flex align-items-center">
+                    <img src="{% static 'adminlte/assets/favicon.ico' %}" alt="로고" width="20" height="20" class="me-2">
+                    <strong>뭐입지?</strong>
+                </a>
             </li>
-        {% else %}
+        </ul>
+
+        <!-- 중앙: 메뉴 -->
+        <ul class="navbar-nav ms-3">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">게시판</a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">일반</a></li>
+                    <li><a class="dropdown-item" href="#">코디</a></li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">미니게임</a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'game:rsp' %}">가위바위보</a></li>
+                    <li><a class="dropdown-item" href="#">로또</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <!-- 오른쪽: 로그인/회원가입 -->
+        <ul class="navbar-nav ms-auto me-3">
+            <!-- {# {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a href="#" class="nav-link">로그아웃</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a href="#" class="nav-link">로그인</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">회원가입</a>
+                </li>
+            {% endif %} #} -->
+
             <li class="nav-item">
                 <a href="#" class="nav-link">로그인</a>
             </li>
             <li class="nav-item">
                 <a href="#" class="nav-link">회원가입</a>
             </li>
-        {% endif %} #} -->
-
-        <li class="nav-item">
-            <a href="#" class="nav-link">로그인</a>
-        </li>
-        <li class="nav-item">
-            <a href="#" class="nav-link">회원가입</a>
-        </li>
-    </ul>
+        </ul>
+    </div>
 </nav>
