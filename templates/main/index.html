@@ -1,47 +1,140 @@
 {% extends "layout/base.html" %}
 
-{% block title %}홈 - 뭐입지?{% endblock title %}
+{% block title %}
+  홈 - 뭐입지?
+{% endblock title %}
 
 {% block head %}
-    {% include "layout/head.html" %}
-{% endblock head %} 
+  {% include "layout/head.html" %}
+  
+{% endblock head %}
 
 {% block navi %}
   {% include "layout/navbar.html" %}
 {% endblock navi %}
 
-{% block header %}
-    {% include "layout/header.html" %}
-{% endblock header %}
-
 {% block content %}
-<!-- 홈 화면 콘텐츠 Start -->
+  <!-- 홈 화면 콘텐츠 Start -->
+  <div class="container my-5">
+    <!-- 1. 상단: 동주소 + 셀렉트 박스 정렬 -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
 
-<div class="content-header">
-  <div class="container-fluid">
-    <div class="row mb-2">
-      <div class="col-sm-6">
-        <h1 class="m-0">오늘의 날씨</h1>
-      </div><!-- /.col -->
-    </div><!-- /.row -->
-  </div><!-- /.container-fluid -->
-</div>
+      <!-- 좌측: 동 주소 -->
+      <h4 class="m-0">조원동 날씨</h4>
 
-<!-- 날씨 정보 카드 -->
-<div class="card">
-  <div class="card-header">
-    <h3 class="card-title">현재 날씨</h3>
+      <!-- 이건 나중에 GPS로 바뀜 -->
+      <!-- 우측: 셀렉트 + 검색 -->
+      <div class="d-flex gap-2">
+        <select class="form-select w-auto">
+          <option>서울특별시</option>
+          <option>경기도</option>
+        </select>
+        <select class="form-select w-auto">
+          <option>강남구</option>
+          <option>종로구</option>
+        </select>
+        <select class="form-select w-auto">
+          <option>신사동</option>
+          <option>청운동</option>
+        </select>
+        <button class="btn btn-primary">검색</button>
+      </div>
+    </div>
+
+    <!-- 2. 오늘의 한 줄 날씨 문구 -->
+    <div class="text-center mb-5 text-muted" style="font-size: 18px;">
+      오늘은 어제보다 낮 기온이 10도 높고 따뜻한 날이에요. 가벼운 옷차림 추천드려요!
+      <!-- 위 문장은 추후 API 기반 + 로직 처리로 자동 생성 -->
+    </div>
+
+    <!-- 3. 시간대별 날씨 슬라이드 -->
+    <div class="d-flex justify-content-center align-items-center mb-5">
+      <button id="btn-prev" class="btn btn-outline-secondary me-2">&lt;</button>
+      <div id="weather-cards" class="d-flex flex-row gap-4"></div>
+      <button id="btn-next" class="btn btn-outline-secondary ms-2">&gt;</button>
+    </div>
+
+    <!-- 4. 6일 요약 날씨 -->
+    <div class="d-flex justify-content-center flex-wrap gap-3 mt-5">
+      {% for day in days %}
+        <div class="border rounded p-3 text-center" style="width: 140px;">
+          <div style="font-weight: bold;">{{ day }}요일</div>
+          <div style="font-size: 24px;">🌥️</div>
+          <div>최고 18°C</div>
+          <div>최저 9°C</div>
+        </div>
+      {% endfor %}
+    </div>
   </div>
-  <div class="card-body">
-    <p>서울: 15°C, 맑음</p>
-    <p>오늘의 옷차림 추천: 가벼운 자켓</p>
-  </div>
-</div>
 
-
-<!-- 홈 화면 콘텐츠 End -->
+  <!-- 홈 화면 콘텐츠 End -->
 {% endblock content %}
 
 {% block footer %}
   {% include "layout/footer.html" %}
 {% endblock footer %}
+
+{% block script %}
+  <script>
+  // 시간대 더미 데이터
+  const weatherData = [
+    { hour: "9시", temp: "15°C", icon: "🌤️" },
+    { hour: "10시", temp: "15°C", icon: "🌤️" },
+    { hour: "11시", temp: "15°C", icon: "🌤️" },
+    { hour: "12시", temp: "15°C", icon: "🌤️" },
+    { hour: "13시", temp: "15°C", icon: "🌤️" },
+    { hour: "14시", temp: "15°C", icon: "🌤️" },
+    { hour: "15시", temp: "15°C", icon: "🌤️" },
+    { hour: "16시", temp: "15°C", icon: "🌤️" },
+    { hour: "17시", temp: "15°C", icon: "🌤️" },
+    { hour: "18시", temp: "15°C", icon: "🌤️" },
+  ];
+
+  let startIndex = 0;
+  const visibleCount = 6;
+
+  const container = document.getElementById("weather-cards");
+  const btnPrev = document.getElementById("btn-prev");
+  const btnNext = document.getElementById("btn-next");
+
+  // 렌더링 함수
+  function renderCards() {
+    container.innerHTML = ""; // 초기화
+    const sliced = weatherData.slice(startIndex, startIndex + visibleCount);
+    sliced.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "text-center border rounded shadow-sm p-4 bg-light";
+      card.style.minWidth = "120px";
+      card.style.height = "140px";
+      card.innerHTML = `
+        <div style="font-size: 32px;">${item.icon}</div>
+        <div style="font-size: 18px;">${item.temp}</div>
+        <div style="font-size: 16px;">${item.hour}</div>
+      `;
+      container.appendChild(card);
+    });
+
+    // 버튼 비활성화 처리
+    btnPrev.disabled = startIndex === 0;
+    btnNext.disabled = startIndex + visibleCount >= weatherData.length;
+  }
+
+  // 이벤트 연결
+  btnPrev.addEventListener("click", () => {
+    if (startIndex > 0) {
+      startIndex -= 1;
+      renderCards();
+    }
+  });
+
+  btnNext.addEventListener("click", () => {
+    if (startIndex + visibleCount < weatherData.length) {
+      startIndex += 1;
+      renderCards();
+    }
+  });
+
+  // 최초 렌더링
+  document.addEventListener("DOMContentLoaded", renderCards);
+  </script>
+{% endblock script %}
