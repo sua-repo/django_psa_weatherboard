@@ -12,6 +12,19 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+# dev_5
+load_dotenv()
+
+NAVER_API_CLIENT_ID = os.getenv("NAVER_API_CLIENT_ID")
+NAVER_API_CLIENT_SECRET = os.getenv("NAVER_API_CLIENT_SECRET")
+
+KMA_SHORT_ENDPOINT = os.getenv("KMA_SHORT_ENDPOINT")
+KMA_SHORT_KEY = os.getenv("KMA_SHORT_ENCODED_KEY")
+
+KMA_MID_ENDPOINT = os.getenv("KMA_MID_ENDPOINT")
+KMA_MID_KEY = os.getenv("KMA_MID_ENCODED_KEY")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -118,7 +131,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+# STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
