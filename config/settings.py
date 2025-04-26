@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "main",  # dev_2 : 홈화면 앱 추가
     "game",  # dev_3 : 게임 앱 추가
+    "board",  # dev_6 : 게시판 앱 추가
 ]
 
 MIDDLEWARE = [

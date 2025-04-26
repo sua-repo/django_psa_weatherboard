@@ -16,12 +16,8 @@
 
         <!-- 중앙: 메뉴 -->
         <ul class="navbar-nav ms-3">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">게시판</a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">일반</a></li>
-                    <li><a class="dropdown-item" href="#">코디</a></li>
-                </ul>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'board:post_list' %}">게시판</a>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">미니게임</a>
