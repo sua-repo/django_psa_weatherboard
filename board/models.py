@@ -28,11 +28,16 @@ class Post(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
+    content = models.TextField(null=True, blank=True)   # dev_11
+    image = models.ImageField(
+        upload_to="comment_images/", blank=True, null=True
+    )  # dev_11
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)  # dev_11
+
 
 # dev_8 : 이미지 여러 개 첨부하기 위해
 class Image(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='post_images/')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="post_images/")
     uploaded_at = models.DateTimeField(auto_now_add=True)

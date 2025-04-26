@@ -15,5 +15,7 @@ urlpatterns = [
     path(
         "delete/<int:post_id>/", views.post_delete, name="post_delete"
     ),  # dev_10 : 게시글 삭제
-    
+    path(
+        "comment/<int:post_id>/", views.comment_create, name="comment_create"
+    ),  # dev_11 : 댓글 작성
 ]

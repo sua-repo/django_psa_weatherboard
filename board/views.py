@@ -1,8 +1,9 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.core.paginator import Paginator
-from .models import Image, Post
+from .models import Comment, Image, Post
 from datetime import date
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 
 # Create your views here.
@@ -119,3 +120,36 @@ def post_delete(request, post_id):
         post.delete()
 
     return redirect("board:post_list")  # 삭제 후 글 목록으로 이동
+
+
+# dev_11 : 댓글 작성
+@login_required
+def comment_create(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    if request.method == "POST":
+        content = request.POST.get("content")
+        image = request.FILES.get("image")
+
+        # 이미지와 내용 둘 다 없을 땐 작성 막기
+        # if not content and not image:
+        #    return redirect("board:post_detail", post_id=post.id)
+
+        # 이미지나 내용 중 하나라도 있으면 댓글 작성
+        if content or image:
+            Comment.objects.create(
+                post=post,
+                author=request.user,
+                content=content,
+                image=image,
+            )
+            return redirect("board:post_detail", post_id=post.id)
+
+        else:
+            messages.error(
+                request, "내용이나 이미지를 입력해야 댓글을 작성할 수 있습니다."
+            )
+            return redirect("board:post_detail", post_id=post.id)
+
+    comments = Comment.objects.filter(post=post).order_by("created_at")
+    return redirect("board:post_detail", post_id=post.id)
