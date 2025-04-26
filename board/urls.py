@@ -18,4 +18,10 @@ urlpatterns = [
     path(
         "comment/<int:post_id>/", views.comment_create, name="comment_create"
     ),  # dev_11 : 댓글 작성
+    path(
+        "comment/update/<int:comment_id>/", views.comment_update, name="comment_update"
+    ),  # dev_12 : 댓글 수정
+    path(
+        "comment/delete/<int:comment_id>/", views.comment_delete, name="comment_delete"
+    ),  # dev_12 : 댓글 삭제
 ]

@@ -1,5 +1,6 @@
 {% extends "layout/base.html" %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}
   게시판 - 뭐입지?
@@ -33,8 +34,12 @@
             {% for post in posts %}
                 <a href="{% url 'board:post_detail' post.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div class="py-4">
-                        <span class="text-secondary">[{{ post.category }}]</span>
-                        <span class="ms-1 fw-semibold" style="font-size: 18px;">{{ post.title }}</span>
+                        <span class="text-muted">[{{ post.category }}]</span>
+                        <span class="ms-1 fw-semibold" style="font-size: 18px;">{{ post.title }}
+                            {% if post.comments.count > 0 %}
+                                <span class="text-muted fw-normal">({{ post.comments.count }})</span>
+                            {% endif %}
+                        </span>
                     </div>
 
                     <div class="d-flex align-items-center justify-content-end gap-2" style="min-width: 250px;">
@@ -43,35 +48,17 @@
                         {% if post.updated_at != post.created_at %}
                             <div class="d-flex flex-column text-end">
                                 <small class="text-muted">
-                                    {% if post.created_at.date == today %}
-                                        {{ post.created_at|time:"P" }}
-                                    {% elif post.created_at.year == today.year %}
-                                        {{ post.created_at|date:"n월 j일 A g:i" }}
-                                    {% else %}
-                                        {{ post.created_at|date:"Y년 n월 j일 A g:i" }}
-                                    {% endif %}
+                                    {{ post.created_at|custom_time }}
                                     작성
                                 </small>
                                 <small class="text-muted">
-                                    {% if post.updated_at.date == today %}
-                                        {{ post.updated_at|time:"P" }}
-                                    {% elif post.updated_at.year == today.year %}
-                                        {{ post.updated_at|date:"n월 j일 A g:i" }}
-                                    {% else %}
-                                        {{ post.updated_at|date:"Y년 n월 j일 A g:i" }}
-                                    {% endif %}
+                                    {{ post.updated_at|custom_time }}
                                     수정
                                 </small>
                             </div>
                         {% else %}
                             <small class="text-muted">
-                                {% if post.created_at.date == today %}
-                                    {{ post.created_at|time:"P" }}
-                                {% elif post.created_at.year == today.year %}
-                                    {{ post.created_at|date:"n월 j일 A g:i" }}
-                                {% else %}
-                                    {{ post.created_at|date:"Y년 n월 j일 A g:i" }}
-                                {% endif %}
+                                {{ post.created_at|custom_time }}
                                 작성
                             </small>
                         {% endif %}

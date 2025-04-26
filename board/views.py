@@ -153,3 +153,49 @@ def comment_create(request, post_id):
 
     comments = Comment.objects.filter(post=post).order_by("created_at")
     return redirect("board:post_detail", post_id=post.id)
+
+
+# dev_12 : 댓글 수정
+@login_required
+def comment_update(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+
+    # 작성자만 수정 가능
+    if request.user != comment.author:
+        messages.error(request, "수정 권한이 없습니다.")
+        return redirect("board:post_detail", post_id=comment.post.id)
+
+    if request.method == "POST":
+        content = request.POST.get("content")
+        image = request.POST.get("image")
+
+        # 내용과 이미지 중 하나라도 있으면 수정 가능
+        if content or image:
+            comment.content = content
+            if image:
+                comment.image = image  # 새 이미지 등록하면 바꿔줌
+            comment.save()
+
+            messages.success(request, "댓글이 수정되었습니다.")
+            return redirect("board:post_detail", post_id=comment.post.id)
+
+        else:
+            messages.error(request, "내용이나 이미지를 입력해야 합니다.")
+            return redirect("board:post_detail", post_id=comment.post.id)
+
+    return render(request, "board/comment_update.html", {"comment": comment})
+
+
+# dev_12 : 댓글 삭제
+@login_required
+def comment_delete(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+
+    # 작성자만 삭제 가능
+    if request.user != comment.author:
+        messages.error(request, "삭제 권한이 없습니다.")
+        return redirect("board:post_detail", post_id=comment.post.id)
+
+    comment.delete()
+    messages.success(request, "댓글이 삭제되었습니다.")
+    return redirect("board:post_detail", post_id=comment.post.id)
