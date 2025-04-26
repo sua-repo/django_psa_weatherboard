@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.core.paginator import Paginator
 from .models import Image, Post
 from datetime import date
@@ -6,10 +6,10 @@ from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
-# dev_6
+# dev_6 : 게시글 목록
 # dev_9 : 카테고리 필터링
 def post_list(request):
-    category = request.GET.get('category')  # '일반' / '코디' / None
+    category = request.GET.get("category")  # '일반' / '코디' / None
     posts = Post.objects.all()
 
     if category:  # 카테고리로 필터링
@@ -31,7 +31,7 @@ def post_list(request):
     return render(request, "board/post_list.html", context)
 
 
-# dev_8
+# dev_8 : 게시글 작성
 @login_required
 def post_create(request):
     if request.method == "POST":
@@ -56,7 +56,7 @@ def post_create(request):
     return render(request, "board/post_create.html")
 
 
-# dev_9
+# dev_9 : 게시글 상세보기
 def post_detail(request, post_id):
     post = Post.objects.get(id=post_id)
     images = post.images.all()  # 해당 게시글에 연결된 이미지들
@@ -64,3 +64,58 @@ def post_detail(request, post_id):
     context = {"post": post, "images": images}
 
     return render(request, "board/post_detail.html", context)
+
+
+# dev_10 : 게시글 수정
+@login_required
+def post_update(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    # 작성자만 수정 가능
+    if request.user != post.author:
+        return redirect("board:post_list")
+
+    if request.method == "POST":
+        title = request.POST.get("title")
+        content = request.POST.get("content")
+        category = request.POST.get("category")
+        delete_images = request.POST.get("delete_images")  # 삭제할 이미지 id들
+        images = request.FILES.getlist("images")
+
+        post.title = title
+        post.content = content
+        post.category = category
+        post.save()
+
+        # 이미지 삭제
+        # 기존 이미지 삭제 처리
+        if delete_images:
+            delete_ids = delete_images.split(",")
+            from .models import Image
+
+            Image.objects.filter(id__in=delete_ids).delete()
+
+        # 새로 추가된 이미지 저장
+        for img in images:
+            Image.objects.create(post=post, image=img)
+
+        return redirect("board:post_detail", post_id=post.id)
+
+    context = {
+        "post": post,
+        "images": post.images.all(),  # 기존 이미지들 넘겨주기
+    }
+
+    return render(request, "board/post_update.html", context)
+
+
+# dev_10 : 게시글 삭제
+@login_required
+def post_delete(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    # 작성자만 삭제 가능
+    if request.user == post.author:
+        post.delete()
+
+    return redirect("board:post_list")  # 삭제 후 글 목록으로 이동
