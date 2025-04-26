@@ -1,0 +1,44 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+{% block title %}
+  {{ post.title }} - 뭐입지?
+{% endblock title %}
+
+{% block head %}
+  {% include "layout/head.html" %}
+{% endblock head %}
+
+{% block navi %}
+  {% include "layout/navbar.html" %}
+{% endblock navi %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mt-4">
+    <h2>{{ post.title }}</h2>
+    <a href="{% url 'board:post_list' %}" class="btn btn-secondary">목록으로</a>
+  </div>
+  
+
+  <div class="text-muted mb-2 pb-3">
+    {{ post.author }} / {{ post.created_at|date:"Y년 n월 j일 A g:i" }}
+  </div>
+
+  <p>{{ post.content }}</p>
+
+  <div class="d-flex flex-wrap gap-3 mt-4">
+    {% for image in images %}
+      <img src="{{ image.image.url }}" style="width: 200px; height: 200px; object-fit: cover;" class="rounded">
+    {% empty %}
+      <!--<p class="text-muted">첨부된 이미지가 없습니다.</p>-->
+    {% endfor %}
+  </div>
+
+  
+</div>
+{% endblock content %}
+
+{% block footer %}
+  {% include "layout/footer.html" %}
+{% endblock footer %}

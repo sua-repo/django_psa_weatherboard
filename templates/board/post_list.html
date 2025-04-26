@@ -17,12 +17,22 @@
 <div class="container my-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold">게시글 목록</h2>
-    <a href="{% url 'board:post_create' %}" class="btn btn-primary">글 작성</a>
+    <div class="d-flex align-items-center gap-2">
+    <form method="get" class="m-0">
+        <select name="category" onchange="this.form.submit()" class="form-select w-auto">
+            <option value="">전체</option>
+            <option value="일반" {% if request.GET.category == "일반" %}selected{% endif %}>일반</option>
+            <option value="코디" {% if request.GET.category == "코디" %}selected{% endif %}>코디</option>
+        </select>
+    </form>
+    <a href="{% url 'board:post_create' %}" class="btn btn-primary ms-3">글 작성</a>
+    </div>
+    
   </div>
 
   <div class="list-group">
     {% for post in posts %}
-    <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+    <a href="{% url 'board:post_detail' post.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
         <div class="py-4">
             <span class="text-secondary">[{{ post.category }}]</span>
             <span class="ms-1 fw-semibold" style="font-size: 18px;">{{ post.title }}</span>
