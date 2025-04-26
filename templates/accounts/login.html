@@ -1,0 +1,119 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+{% block title %}로그인{% endblock title %}
+
+{% block head %}
+    {% include "layout/head.html" %}
+    <style>
+        /* 로그인 폼 스타일 */
+        .login-form {
+            max-width: 400px;
+            margin: 80px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .login-form h1 {
+            font-size: 32px;
+            margin-bottom: 40px;
+        }
+
+        .int-area {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .int-area input {
+            width: 100%;
+            padding: 20px 10px 10px;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #000;
+            font-size: 18px;
+            outline: none;
+        }
+
+        .int-area label {
+            position: absolute;
+            top: 15px;
+            left: 10px;
+            font-size: 18px;
+            transition: 0.5s;
+            pointer-events: none;
+        }
+
+        .int-area input:focus + label,
+        .int-area input:valid + label {
+            top: -5px;
+            font-size: 13px;
+            color: #166caa;
+        }
+
+        .btn-area {
+            margin-top: 30px;
+        }
+
+        .btn-area button {
+            width: 100%;
+            height: 50px;
+            background: #e3f2fd; /* 네비바랑 같은 색 */
+            border: 1px solid #e3f2fd; 
+            border-radius: 20px;
+            color: #166caa; /* 글자색 짙은 파란색 */
+            font-size: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .caption {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .caption a {
+            color: #166caa;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+    </style>
+{% endblock head %}
+
+{% block navi %}
+    {% include "layout/navbar.html" %}
+{% endblock navi %}
+
+{% block content %}
+    <section class="login-form">
+        <h1>Login</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" action="{% url 'accounts:login_user' %}">
+            {% csrf_token %}
+            <div class="int-area">
+                <input type="text" name="username" id="username" autocomplete="off" required>
+                <label for="username">USER NAME</label>
+            </div>
+            <div class="int-area">
+                <input type="password" name="password" id="password" autocomplete="off" required>
+                <label for="password">PASSWORD</label>
+            </div>
+            <div class="btn-area">
+                <button type="submit">LOGIN</button>
+            </div>
+        </form>
+
+        <div class="caption">
+            <a href="#">회원가입</a>  <!-- 나중에 회원가입 URL 연결 예정 -->
+        </div>
+    </section>
+{% endblock content %}
+
+{% block footer %}
+    {% include "layout/footer.html" %}
+{% endblock footer %}

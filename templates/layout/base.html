@@ -13,6 +13,15 @@
       {% include "layout/navbar.html" %}
     {% endblock %}
 
+    <!-- 메시지 출력: 로그인 페이지에서는 숨기기 -->
+    {% if messages and not request.path == '/accounts/login/' %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} text-center">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <main class="flex-grow-1">
       {% block header %}{% endblock header %}
       {% block content %}{% endblock content %}
