@@ -19,6 +19,8 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, related_name="liked_posts")
     scraps = models.ManyToManyField(User, related_name="scrapped_posts")
 
+    image = models.ImageField(upload_to="post_images/", blank=True, null=True)
+
     def __str__(self):
         return self.title
 
@@ -28,3 +30,9 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+# dev_8 : 이미지 여러 개 첨부하기 위해
+class Image(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='post_images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)

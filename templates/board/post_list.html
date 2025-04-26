@@ -17,7 +17,7 @@
 <div class="container my-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold">게시글 목록</h2>
-    <a href="#" class="btn btn-primary">글 작성</a>
+    <a href="{% url 'board:post_create' %}" class="btn btn-primary">글 작성</a>
   </div>
 
   <div class="list-group">
@@ -29,7 +29,7 @@
         </div>
 
         <div>
-            <small class="text-muted">{{post.author}}</small>
+            <small class="text-muted">{{post.author.username}}</small>
             <!-- 작성일 : 오늘 작성글이면 시간만 / 올해 작성글이면 월 일 시간 / 그 외엔 년 월 일 시간 -->
             <small class="text-muted">
                 {% if post.created_at.date == today %}

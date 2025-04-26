@@ -1,0 +1,143 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+{% block title %}
+  글 작성 - 뭐입지?
+{% endblock title %}
+
+{% block head %}
+  {% include "layout/head.html" %}
+{% endblock head %}
+
+{% block navi %}
+  {% include "layout/navbar.html" %}
+{% endblock navi %}
+
+{% block content %}
+<div class="container my-5">
+  <h2 class="mb-4">글 작성</h2>
+  <form method="post" id="post-form" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label for="category" class="form-label">카테고리</label>
+      <select name="category" id="category" class="form-select" required>
+        <option value="일반">일반</option>
+        <option value="코디">코디</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="title" class="form-label">제목</label>
+      <input type="text" name="title" id="title" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="content" class="form-label">내용</label>
+      <textarea name="content" id="content" class="form-control" rows="8" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="image" class="form-label">사진 첨부</label>
+        <input type="file" name="images" id="image" class="form-control" multiple>
+
+        
+
+        <!-- 미리보기용 이미지 -->
+        <div id="preview-container" class="mt-3 d-flex flex-wrap gap-2"></div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">작성하기</button>
+    <a href="{% url 'board:post_list' %}" class="btn btn-secondary">취소</a>
+  </form>
+</div>
+{% endblock content %}
+
+
+{% block footer %}
+  {% include "layout/footer.html" %}
+{% endblock footer %}
+
+
+{% block script %}
+<script>
+let selectedFiles = [];  // 선택한 파일들을 저장하는 배열
+
+document.getElementById('image').addEventListener('change', function(event) {
+    const newFiles = Array.from(event.target.files);  // 새로 선택한 파일들
+    selectedFiles = selectedFiles.concat(newFiles);    // 기존 배열에 추가
+    renderPreviews();
+});
+
+// 미리보기 다시 그리는 함수
+function renderPreviews() {
+    const previewContainer = document.getElementById('preview-container');
+    previewContainer.innerHTML = ""; // 이전에 그린 것 지우기
+
+    selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'position-relative';
+            wrapper.style.width = '150px';
+
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '150px';
+            img.style.height = '150px';
+            img.style.objectFit = 'cover';
+            img.className = "rounded";
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'X';
+            deleteBtn.className = 'btn btn-danger btn-sm position-absolute top-0 end-0';
+            deleteBtn.style.transform = 'translate(50%, -50%)';
+            deleteBtn.addEventListener('click', () => {
+                selectedFiles.splice(index, 1);
+                renderPreviews();
+            });
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(deleteBtn);
+            previewContainer.appendChild(wrapper);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+document.getElementById('post-form').addEventListener('submit', function(event) {
+    event.preventDefault();  // 기본 제출 막기
+
+    const formData = new FormData();
+
+    // 텍스트 필드 추가
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name="csrfmiddlewaretoken"]').value);
+    formData.append('category', document.getElementById('category').value);
+    formData.append('title', document.getElementById('title').value);
+    formData.append('content', document.getElementById('content').value);
+
+    // 선택한 파일들 추가
+    selectedFiles.forEach(file => {
+        formData.append('images', file);
+    });
+
+    // 서버로 전송
+    fetch("{% url 'board:post_create' %}", {
+        method: "POST",
+        body: formData,
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+        } else {
+            alert("업로드 실패");
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        alert("에러가 발생했습니다.");
+    });
+});
+
+</script>
+{% endblock script %}

@@ -146,3 +146,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",  # 반드시 있어야 함
 ]
+
+# dev_8
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

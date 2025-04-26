@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.core.paginator import Paginator
-from .models import Post
+from .models import Image, Post
 from datetime import date
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -19,3 +20,31 @@ def post_list(request):
         "today": date.today(),
     }
     return render(request, "board/post_list.html", context)
+
+
+# dev_8
+@login_required
+def post_create(request):
+    if request.method == "POST":
+        title = request.POST.get("title")
+        content = request.POST.get("content")
+        category = request.POST.get("category")
+        images = request.FILES.getlist('images')  # 여러 개 이미지 파일 가져오기
+
+        # 먼저 글(Post) 저장
+        post = Post.objects.create(
+            author=request.user,
+            title=title,
+            content=content,
+            category=category,
+        )
+
+        # 그 Post에 연결해서 이미지들도 저장
+        for img in images:
+            Image.objects.create(
+                post=post,
+                image=img
+            )
+        return redirect("board:post_list")  # 작성 후 글 목록으로 이동
+
+    return render(request, "board/post_create.html")

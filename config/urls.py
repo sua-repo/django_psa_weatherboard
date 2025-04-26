@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls.static import static
+from config import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -7,3 +9,6 @@ urlpatterns = [
     path("game/", include("game.urls")),  # dev_3 : game 앱 연결
     path("board/", include("board.urls")),  # dev_6 : board 앱 연결
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
