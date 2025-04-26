@@ -199,3 +199,33 @@ def comment_delete(request, comment_id):
     comment.delete()
     messages.success(request, "댓글이 삭제되었습니다.")
     return redirect("board:post_detail", post_id=comment.post.id)
+
+
+# dev_13 : 추천 기능
+@login_required
+def post_like(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    # 추천한 상태에서 한 번 더 누르면 추천 취소
+    if request.user in post.likes.all():
+        post.likes.remove(request.user)
+
+    else:
+        post.likes.add(request.user)
+
+    return redirect("board:post_detail", post_id=post.id)
+
+
+# dev_13 : 스크랩 기능
+@login_required
+def post_scrap(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    # 스크랩한 상태에서 한 번 더 누르면 스크랩 취소
+    if request.user in post.scraps.all():
+        post.scraps.remove(request.user)
+
+    else:
+        post.scraps.add(request.user)
+
+    return redirect("board:post_detail", post_id=post.id)

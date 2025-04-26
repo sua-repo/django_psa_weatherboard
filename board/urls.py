@@ -24,4 +24,10 @@ urlpatterns = [
     path(
         "comment/delete/<int:comment_id>/", views.comment_delete, name="comment_delete"
     ),  # dev_12 : 댓글 삭제
+    path(
+        "post/<int:post_id>/like/", views.post_like, name="post_like"
+    ),  # dev_13 : 추천
+    path(
+        "post/<int:post_id>/scrap/", views.post_scrap, name="post_scrap"
+    ),  # dev_13 : 스크랩
 ]
