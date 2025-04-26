@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from .models import Post
+from datetime import date
 
 
 # Create your views here.
@@ -13,5 +14,8 @@ def post_list(request):
         page_number
     )  # 현재 페이지 번호에 해당하는 게시글 리스트 추출
 
-    context = {"posts": page_obj}
+    context = {
+        "posts": page_obj,
+        "today": date.today(),
+    }
     return render(request, "board/post_list.html", context)

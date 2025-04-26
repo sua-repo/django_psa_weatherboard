@@ -23,11 +23,25 @@
   <div class="list-group">
     {% for post in posts %}
     <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-      <div>
-        <span class="text-secondary">[{{ post.category }}]</span>
-        <span class="ms-1">{{ post.title }}</span>
-      </div>
-      <small class="text-muted">{{ post.created_at|date:"Y년 n월 j일 g:i A" }}</small>
+        <div class="py-4">
+            <span class="text-secondary">[{{ post.category }}]</span>
+            <span class="ms-1 fw-semibold" style="font-size: 18px;">{{ post.title }}</span>
+        </div>
+
+        <div>
+            <small class="text-muted">{{post.author}}</small>
+            <!-- 작성일 : 오늘 작성글이면 시간만 / 올해 작성글이면 월 일 시간 / 그 외엔 년 월 일 시간 -->
+            <small class="text-muted">
+                {% if post.created_at.date == today %}
+                    {{ post.created_at|time:"P" }}
+                {% elif post.created_at.year == today.year %}
+                    {{ post.created_at|date:"n월 j일 A g:i" }}
+                {% else %}
+                    {{ post.created_at|date:"Y년 n월 j일 A g:i" }}
+                {% endif %}
+            </small>
+        </div>
+
     </a>
     {% empty %}
     <div class="text-center text-muted">아직 등록된 게시글이 없습니다.</div>
