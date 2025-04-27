@@ -27,3 +27,9 @@ def custom_time(value):
             .replace("AM", "오전")
             .replace("PM", "오후")
         )
+
+
+@register.filter
+def get_item(dictionary, key):
+    # 딕셔너리에서 key에 해당하는 값을 가져온다.
+    return dictionary.get(key)

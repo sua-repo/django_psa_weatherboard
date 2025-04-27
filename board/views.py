@@ -70,11 +70,20 @@ def post_detail(request, post_id):
     except Profile.DoesNotExist:
         profile = None  # 만약 프로필이 없을 경우를 대비
 
+    # 댓글마다 프로필 매칭
+    comment_profiles = {}
+    for comment in comments:
+        try:
+            comment_profiles[comment.id] = Profile.objects.get(user=comment.author)
+        except Profile.DoesNotExist:
+            comment_profiles[comment.id] = None
+
     context = {
         "post": post,
         "images": images,
         "comments": comments,
         "profile": profile,
+        "comment_profiles": comment_profiles,
     }
     return render(request, "board/post_detail.html", context)
 
