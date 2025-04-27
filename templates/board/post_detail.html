@@ -76,7 +76,18 @@
     
 
         <div class="text-muted mb-2 pb-3">
-            {{ post.author.username }} /
+            {{ post.author.username }}
+            {% if profile %}
+                (
+                {% if profile.cold_sensitivity %}
+                    🥶{{ profile.cold_sensitivity }}
+                {% endif %}
+                {% if profile.heat_sensitivity %}
+                    🥵{{ profile.heat_sensitivity }}
+                {% endif %}
+                )
+            {% endif %} 
+            /
             {% if post.updated_at != post.created_at %}
                 {{ post.updated_at|custom_time }} (수정)
             {% else %}

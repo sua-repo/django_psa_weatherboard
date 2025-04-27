@@ -4,6 +4,7 @@ from .models import Comment, Image, Post
 from datetime import date
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from accounts.models import Profile
 
 
 # Create your views here.
@@ -57,13 +58,24 @@ def post_create(request):
     return render(request, "board/post_create.html")
 
 
+# dev_18 : 작성자 정보 추가
 # dev_9 : 게시글 상세보기
 def post_detail(request, post_id):
     post = Post.objects.get(id=post_id)
     images = post.images.all()  # 해당 게시글에 연결된 이미지들
+    comments = post.comments.all().order_by("created_at")
 
-    context = {"post": post, "images": images}
+    try:
+        profile = Profile.objects.get(user=post.author)
+    except Profile.DoesNotExist:
+        profile = None  # 만약 프로필이 없을 경우를 대비
 
+    context = {
+        "post": post,
+        "images": images,
+        "comments": comments,
+        "profile": profile,
+    }
     return render(request, "board/post_detail.html", context)
 
 
