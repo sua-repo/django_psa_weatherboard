@@ -75,7 +75,7 @@ def signup_user(request):
     return render(request, "accounts/signup.html")
 
 
-# dev_17 : 회원가입
+# dev_17 : 마이페이지
 @login_required
 def mypage(request):
     user = request.user
@@ -109,25 +109,31 @@ def mypage(request):
         paginator = Paginator(scrapped_posts, 10)
         items = paginator.get_page(page)
     else:
-        # 전체일 때는 활동별로 5개씩 자른다
-        my_posts = my_posts[:5]
-        my_comments = my_comments[:5]
-        liked_posts = liked_posts[:5]
-        scrapped_posts = scrapped_posts[:5]
+        # 전체일 때만 5개씩 자름
+        my_posts_preview = my_posts[:5]
+        my_comments_preview = my_comments[:5]
+        liked_posts_preview = liked_posts[:5]
+        scrapped_posts_preview = scrapped_posts[:5]
+        my_posts = my_posts  # 전체 데이터 그대로 유지
+        my_comments = my_comments
+        liked_posts = liked_posts
+        scrapped_posts = scrapped_posts
         items = None
 
     context = {
         "filter_type": filter_type,
-        "my_posts": my_posts,
-        "my_comments": my_comments,
-        "liked_posts": liked_posts,
-        "scrapped_posts": scrapped_posts,
+        "my_posts": my_posts_preview if filter_type == "all" else my_posts,
+        "my_comments": my_comments_preview if filter_type == "all" else my_comments,
+        "liked_posts": liked_posts_preview if filter_type == "all" else liked_posts,
+        "scrapped_posts": (
+            scrapped_posts_preview if filter_type == "all" else scrapped_posts
+        ),
         "items": items,
     }
     return render(request, "accounts/mypage.html", context)
 
 
-# dev_18 : 마이페이지 정보 수정
+# dev_17 : 마이페이지 정보 수정
 def edit_user(request):
     if request.method == "POST":
         cold_sensitivity = request.POST.get("cold_sensitivity")

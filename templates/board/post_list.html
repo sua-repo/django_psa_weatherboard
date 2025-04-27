@@ -7,7 +7,31 @@
 {% endblock title %}
 
 {% block head %}
-  {% include "layout/head.html" %}
+    {% include "layout/head.html" %}
+    <style>
+        /* 검색 버튼 스타일 */
+        .btn-custom-blue {
+            background-color: #add8e6;
+            color: #2a4d69;
+            border: none;
+        }
+
+        .btn-custom-blue:hover {
+            opacity: 0.9;
+        }
+
+        /* 페이지네이션 현재 페이지 스타일 */
+        .page-item.active .page-link {
+            background-color: #add8e6;
+            border-color: #add8e6;
+            color: #2a4d69;
+        }
+
+        /* 페이지네이션 기본 버튼 hover 스타일 (선택사항) */
+        .page-link:hover {
+            background-color: #e6f0ff;
+        }
+    </style>
 {% endblock head %}
 
 {% block navi %}
@@ -19,17 +43,24 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold">게시글 목록</h2>
             <div class="d-flex align-items-center gap-2">
-                <form method="get" class="m-0">
-                    <select name="category" onchange="this.form.submit()" class="form-select w-auto">
+                <!-- 카테고리 선택 -->
+                <form method="get" class="d-flex align-items-center m-0">
+                    <select name="category" onchange="this.form.submit()" class="form-select w-auto me-2">
                         <option value="">전체</option>
                         <option value="일반" {% if request.GET.category == "일반" %}selected{% endif %}>일반</option>
                         <option value="코디" {% if request.GET.category == "코디" %}selected{% endif %}>코디</option>
                     </select>
+
+                    <!-- 검색창 추가 -->
+                    <input type="text" name="search" class="form-control form-control-sm w-auto" 
+                        placeholder="검색어 입력" value="{{ search_query|default_if_none:'' }}" style="width: 150px;">
+                    <button type="submit" class="btn btn-custom-blue ms-2">검색</button>
                 </form>
-                <a href="{% url 'board:post_create' %}" class="btn btn-primary ms-3">글 작성</a>
+                <a href="{% url 'board:post_create' %}" class="btn btn-custom-blue ms-3">글 작성</a>
             </div> 
         </div>
 
+        <!-- 게시글 목록 -->
         <div class="list-group">
             {% for post in posts %}
                 <a href="{% url 'board:post_detail' post.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">

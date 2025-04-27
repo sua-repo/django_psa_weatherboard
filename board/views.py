@@ -5,17 +5,35 @@ from datetime import date
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from accounts.models import Profile
-
+from django.db.models import Q
 
 # Create your views here.
-# dev_6 : 게시글 목록
+
+
+# dev_19 : 검색 기능 추가
 # dev_9 : 카테고리 필터링
+# dev_6 : 게시글 목록
 def post_list(request):
     category = request.GET.get("category")  # '일반' / '코디' / None
+    search_query = request.GET.get("search")  # 검색어
     posts = Post.objects.all()
 
     if category:  # 카테고리로 필터링
         posts = posts.filter(category=category)
+
+    if search_query:
+        # 글 제목이나 내용에 검색어가 있을 때
+        posts_in_title_content = posts.filter(
+            Q(title__icontains=search_query) | Q(content__icontains=search_query)
+        )
+
+        # 댓글 내용에 검색어가 있을 때
+        posts_in_comments = Post.objects.filter(
+            comments__content__icontains=search_query
+        )
+
+        # 두 가지를 합친 후 중복 제거
+        posts = (posts_in_title_content | posts_in_comments).distinct()
 
     posts = posts.order_by("-created_at")
 
@@ -29,6 +47,7 @@ def post_list(request):
         "posts": page_obj,
         "today": date.today(),
         "selected_category": category,
+        "search_query": search_query,
     }
     return render(request, "board/post_list.html", context)
 
