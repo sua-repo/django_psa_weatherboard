@@ -1,0 +1,99 @@
+
+{% load static %}
+{% load custom_filters %}
+
+
+<!-- 내가 쓴 글 -->
+<div id="post-list">
+    <h5 class="mb-3">내가 쓴 글</h5>
+    {% if my_posts %}
+        {% for post in my_posts %}
+            <a href="{% url 'board:post_detail' post.id %}" class="border rounded p-3 mb-2 d-flex justify-content-between align-items-center text-decoration-none text-dark">
+                <strong>{{ post.title }}</strong>
+                <div class="d-flex flex-column text-end">
+                    <small class="text-muted">{{ post.created_at|custom_time }} 작성</small>
+                    {% if post.updated_at != post.created_at %}
+                        <small class="text-muted">{{ post.updated_at|custom_time }} 수정</small>
+                    {% else %}
+                        <small class="opacity-0">빈줄</small>
+                    {% endif %}
+                </div>
+            </a>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">작성한 글이 없습니다.</p>
+    {% endif %}
+</div>
+
+<!-- 내가 쓴 댓글 -->
+<div id="comment-list" class="mt-5">
+    <h5 class="mb-3">내가 쓴 댓글</h5>
+    {% if my_comments %}
+        {% for comment in my_comments %}
+            <a href="{% url 'board:post_detail' comment.post.id %}" class="border rounded p-3 mb-2 d-flex justify-content-between align-items-center text-decoration-none text-dark">
+                <strong>
+                    {{ comment.post.title }} -
+                    {% if comment.content %}
+                        {{ comment.content|truncatechars:30 }}
+                    {% elif comment.image %}
+                        (사진)
+                    {% endif %}
+                </strong>
+                <div class="d-flex flex-column text-end">
+                    <small class="text-muted">{{ comment.created_at|custom_time }} 작성</small>
+                    {% if comment.updated_at != comment.created_at %}
+                        <small class="text-muted">{{ comment.updated_at|custom_time }} 수정</small>
+                    {% else %}
+                        <small class="opacity-0">빈줄</small>
+                    {% endif %}
+                </div>
+            </a>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">작성한 댓글이 없습니다.</p>
+    {% endif %}
+</div>
+
+<!-- 추천한 글 -->
+<div id="like-list" class="mt-5">
+    <h5 class="mb-3">추천한 글</h5>
+    {% if liked_posts %}
+        {% for post in liked_posts %}
+            <a href="{% url 'board:post_detail' post.id %}" class="border rounded p-3 mb-2 d-flex justify-content-between align-items-center text-decoration-none text-dark">
+                <strong>{{ post.title }}</strong>
+                <div class="d-flex flex-column text-end">
+                    <small class="text-muted">{{ post.created_at|custom_time }} 작성</small>
+                    {% if post.updated_at != post.created_at %}
+                        <small class="text-muted">{{ post.updated_at|custom_time }} 수정</small>
+                    {% else %}
+                        <small class="opacity-0">빈줄</small>
+                    {% endif %}
+                </div>
+            </a>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">추천한 글이 없습니다.</p>
+    {% endif %}
+</div>
+
+<!-- 스크랩한 글 -->
+<div id="scrap-list" class="mt-5">
+    <h5 class="mb-3">스크랩한 글</h5>
+    {% if scrapped_posts %}
+        {% for post in scrapped_posts %}
+            <a href="{% url 'board:post_detail' post.id %}" class="border rounded p-3 mb-2 d-flex justify-content-between align-items-center text-decoration-none text-dark">
+                <strong>{{ post.title }}</strong>
+                <div class="d-flex flex-column text-end">
+                    <small class="text-muted">{{ post.created_at|custom_time }} 작성</small>
+                    {% if post.updated_at != post.created_at %}
+                        <small class="text-muted">{{ post.updated_at|custom_time }} 수정</small>
+                    {% else %}
+                        <small class="opacity-0">빈줄</small>
+                    {% endif %}
+                </div>
+            </a>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">스크랩한 글이 없습니다.</p>
+    {% endif %}
+</div>

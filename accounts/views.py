@@ -5,6 +5,8 @@ from django.contrib import messages
 from .forms import SignUpForm
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -29,6 +31,7 @@ def login_user(request):
 
 
 # dev_15 : 로그아웃
+@login_required
 def logout_user(request):
     logout(request)
     messages.success(request, "로그아웃되었습니다.")
@@ -70,3 +73,80 @@ def signup_user(request):
         return redirect("accounts:login_user")  # 회원가입 후 로그인 페이지로 이동
 
     return render(request, "accounts/signup.html")
+
+
+# dev_17 : 회원가입
+@login_required
+def mypage(request):
+    user = request.user
+
+    filter_type = request.GET.get("filter", "all")
+    page = request.GET.get("page")
+
+    # 내가 쓴 글 (최신순 정렬)
+    my_posts = user.post_set.all().order_by("-created_at")
+
+    # 내가 쓴 댓글 (최신순 정렬)
+    my_comments = user.comment_set.all().order_by("-created_at")
+
+    # 내가 추천한 글 (최신순 정렬)
+    liked_posts = user.liked_posts.all().order_by("-created_at")
+
+    # 내가 스크랩한 글 (최신순 정렬)
+    scrapped_posts = user.scrapped_posts.all().order_by("-created_at")
+
+    # 필터별 데이터
+    if filter_type == "posts":
+        paginator = Paginator(my_posts, 10)
+        items = paginator.get_page(page)
+    elif filter_type == "comments":
+        paginator = Paginator(my_comments, 10)
+        items = paginator.get_page(page)
+    elif filter_type == "likes":
+        paginator = Paginator(liked_posts, 10)
+        items = paginator.get_page(page)
+    elif filter_type == "scraps":
+        paginator = Paginator(scrapped_posts, 10)
+        items = paginator.get_page(page)
+    else:
+        # 전체일 때는 활동별로 5개씩 자른다
+        my_posts = my_posts[:5]
+        my_comments = my_comments[:5]
+        liked_posts = liked_posts[:5]
+        scrapped_posts = scrapped_posts[:5]
+        items = None
+
+    context = {
+        "filter_type": filter_type,
+        "my_posts": my_posts,
+        "my_comments": my_comments,
+        "liked_posts": liked_posts,
+        "scrapped_posts": scrapped_posts,
+        "items": items,
+    }
+    return render(request, "accounts/mypage.html", context)
+
+
+# dev_18 : 마이페이지 정보 수정
+def edit_user(request):
+    if request.method == "POST":
+        cold_sensitivity = request.POST.get("cold_sensitivity")
+        heat_sensitivity = request.POST.get("heat_sensitivity")
+
+        profile = Profile.objects.get(user=request.user)
+        profile.cold_sensitivity = cold_sensitivity
+        profile.heat_sensitivity = heat_sensitivity
+        profile.save()
+
+        messages.success(request, "정보가 수정되었습니다.")
+        return redirect("accounts:mypage")
+
+    else:
+        profile = Profile.objects.get(user=request.user)
+
+        context = {
+            "user": request.user,
+            "profile": profile,
+        }
+
+        return render(request, "accounts/edit_user.html", context)

@@ -151,3 +151,7 @@ STATICFILES_DIRS = [
 # dev_8
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+
+# dev_17
+LOGIN_URL = "accounts:login_user"

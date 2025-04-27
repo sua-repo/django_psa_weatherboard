@@ -1,0 +1,57 @@
+{% extends "layout/base.html" %}
+
+{% block title %}내 정보 수정{% endblock title %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 500px;">
+    <h2 class="text-center mb-4">내 정보 수정</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">아이디</label>
+            <input type="text" class="form-control" value="{{ user.username }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">이름</label>
+            <input type="text" class="form-control" value="{{ profile.real_name }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">생년월일</label>
+            <input type="date" class="form-control" value="{{ profile.birthdate|date:'Y-m-d' }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">추위 민감도</label>
+            <select name="cold_sensitivity" class="form-select" required>
+                <option value="민감" {% if profile.cold_sensitivity == "민감" %}selected{% endif %}>민감</option>
+                <option value="보통" {% if profile.cold_sensitivity == "보통" %}selected{% endif %}>보통</option>
+                <option value="둔감" {% if profile.cold_sensitivity == "둔감" %}selected{% endif %}>둔감</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">더위 민감도</label>
+            <select name="heat_sensitivity" class="form-select" required>
+                <option value="민감" {% if profile.heat_sensitivity == "민감" %}selected{% endif %}>민감</option>
+                <option value="보통" {% if profile.heat_sensitivity == "보통" %}selected{% endif %}>보통</option>
+                <option value="둔감" {% if profile.heat_sensitivity == "둔감" %}selected{% endif %}>둔감</option>
+            </select>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">수정 완료</button>
+        </div>
+    </form>
+
+</div>
+{% endblock content %}

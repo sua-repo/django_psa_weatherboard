@@ -1,0 +1,92 @@
+{% extends "layout/base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}마이페이지{% endblock title %}
+
+{% block head %}
+    {% include "layout/head.html" %}
+    <style>
+        .btn-custom-blue {
+            background-color: #add8e6;
+            color: #2a4d69;
+            border: none;
+        }
+        .btn-custom-blue:hover {
+            opacity: 0.9;
+        }
+    </style>
+{% endblock head %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+        <h2 class="mb-0">마이페이지</h2>
+        <a href="{% url 'accounts:edit_user' %}" class="btn btn-custom-blue btn-sm">정보 수정</a>
+    </div>
+
+    <!-- 셀렉트박스 따로 아래로 -->
+    <div class="d-flex justify-content-end mb-2">
+        <select id="filterSelect" class="form-select form-select-sm" style="width: 150px;">
+            <option value="all" selected>전체</option>
+            <option value="posts">내가 쓴 글</option>
+            <option value="comments">내가 쓴 댓글</option>
+            <option value="likes">추천한 글</option>
+            <option value="scraps">스크랩한 글</option>
+        </select>
+    </div>
+
+    <div id="activity-list">
+    {% if items %}
+        {% for item in items %}
+            <a href="{% if filter_type == 'comments' %}{% url 'board:post_detail' item.post.id %}{% else %}{% url 'board:post_detail' item.id %}{% endif %}"
+               class="border rounded p-3 mb-2 d-flex justify-content-between align-items-center text-decoration-none text-dark">
+                <strong>
+                    {% if filter_type == 'comments' %}
+                        {{ item.post.title }} - {{ item.content|truncatechars:30 }}
+                    {% else %}
+                        {{ item.title }}
+                    {% endif %}
+                </strong>
+                <div class="d-flex flex-column text-end">
+                    <small class="text-muted">{{ item.created_at|custom_time }} 작성</small>
+                    {% if item.updated_at != item.created_at %}
+                        <small class="text-muted">{{ item.updated_at|custom_time }} 수정</small>
+                    {% else %}
+                        <small class="opacity-0">빈줄</small>
+                    {% endif %}
+                </div>
+            </a>
+        {% endfor %}
+
+        <!-- 페이지네이션 -->
+        <div class="d-flex justify-content-center mt-4">
+            {% if items.has_other_pages %}
+            <ul class="pagination">
+                {% if items.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?filter={{ filter_type }}&page={{ items.previous_page_number }}">이전</a>
+                    </li>
+                {% endif %}
+
+                {% for num in items.paginator.page_range %}
+                    <li class="page-item {% if items.number == num %}active{% endif %}">
+                        <a class="page-link" href="?filter={{ filter_type }}&page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if items.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?filter={{ filter_type }}&page={{ items.next_page_number }}">다음</a>
+                    </li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        </div>
+    {% else %}
+        <!-- 전체일 때 -->
+        {% include "accounts/mypage_activity_list.html" %}
+    {% endif %}
+    </div>
+</div>
+{% endblock content %}
