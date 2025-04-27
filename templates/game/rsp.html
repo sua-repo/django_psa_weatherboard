@@ -7,21 +7,33 @@
     {% include "layout/head.html" %}
     <style>
         .rsp-card {
-            min-height: 430px;
+            min-height: 500px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             text-align: center;
         }
+
         .rsp-card .card-body {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
+
         .rsp-footer {
-            padding-bottom: 15px;
+            min-height: 40px; /* 심판 판정 결과와 컴퓨터 버튼 높이 공간 통일 */
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        .card-img-top {
+            height: 300px; /* 이미지 높이 고정 (곰돌이, 가위, 바위, 보 모두) */
+            object-fit: contain; /* 찌그러지지 않게 */
+        }
+        
     </style>
 {% endblock head %}  
 
@@ -68,9 +80,9 @@
                     <img id="com-img" class="card-img-top" src="{% static 'game/rsp/gomdori.png' %}" alt="컴퓨터">
                     <div class="card-body">
                         <h5 class="card-title">컴퓨터</h5>
-                        <div class="d-flex justify-content-center">
+                        <p class="rsp-footer">
                             <button id="com-choice" class="btn btn-outline-secondary btn-sm px-2 py-1 w-auto" disabled>랜덤 생성</button>
-                        </div>
+                        </p>
                     </div>
                 </div>
             </div>
