@@ -67,18 +67,6 @@
   const today = now.getDay();
   const days = Array.from({ length: 6 }, (_, i) => daysOfWeek[(today + i + 1) % 7]);
 
-  // 날씨 데이터 초기화
-  // 테스트용 더미 데이터
-  let weatherData = [
-    { hour: "15시", temp: "16°C", icon: "☀️" },
-    { hour: "16시", temp: "17°C", icon: "🌤️" },
-    { hour: "17시", temp: "18°C", icon: "🌤️" },
-    { hour: "18시", temp: "18°C", icon: "🌥️" },
-    { hour: "21시", temp: "16°C", icon: "🌙" },
-    { hour: "00시", temp: "14°C", icon: "🌙" },
-    { hour: "03시", temp: "13°C", icon: "🌧️" },
-    { hour: "06시", temp: "12°C", icon: "🌧️" }
-  ];
 
   // 슬라이드 관련 설정값
   let startIndex = 0;
@@ -87,6 +75,9 @@
   const container = document.getElementById("weather-cards");
   const btnPrev = document.getElementById("btn-prev");
   const btnNext = document.getElementById("btn-next");
+
+  // 날씨 데이터 전역 변수로 선언 (API로 받아온 결과를 담을 곳)
+  let weatherData = [];
 
   // 시간별 날씨 카드 렌더링 함수
   function renderCards() {
@@ -108,6 +99,8 @@
     btnPrev.disabled = startIndex === 0;
     btnNext.disabled = startIndex + visibleCount >= weatherData.length;
   }
+
+  window.renderCards = renderCards;
 
   //  이전 버튼
   btnPrev.addEventListener("click", () => {
@@ -144,9 +137,17 @@
     });
   }
 
-  // 페이지 로딩 완료 시 실행
+  // 페이지 로딩 시: 주소 json 불러오기 + 요약 날씨 렌더링만 실행
   document.addEventListener("DOMContentLoaded", () => {
-    renderCards();           // 날씨 카드 렌더링
+    fetch("/static/json/address_data.json")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("주소 데이터:", data);
+      })
+      .catch((error) => {
+        console.error("주소 데이터를 불러오는 데 실패했습니다:", error);
+      });
+
     renderDailySummary();    // 요일 요약 날씨 렌더링
   });
 
@@ -169,14 +170,19 @@
       // 위도, 경도를 기상청용 격자 좌표로 변환
       const { x, y } = convertToGrid(lat, lon);
 
-      // 날씨 데이터 호출
+      // getWeatherForecast가 결과를 return 또는 콜백으로 전달하는 구조라고 가정하고 사용
       getWeatherForecast(
         x,
         y,
         `${window.KMA_SHORT_ENDPOINT}/getVilageFcst`,
         window.KMA_SHORT_KEY,
-        `${window.KMA_MID_ENDPOINT}/getMidTa`,  //
-        window.KMA_MID_KEY
+        `${window.KMA_MID_ENDPOINT}/getMidTa`,
+        window.KMA_MID_KEY,
+        function(result) {
+          // 받아온 데이터 저장하고 렌더링
+          weatherData = result;
+          renderCards();
+        }
       );
 
     },
@@ -184,6 +190,8 @@
       console.error("위치 정보를 가져올 수 없습니다.", error);
     }
   );
+
+
 </script>
 
 {% endblock script %}

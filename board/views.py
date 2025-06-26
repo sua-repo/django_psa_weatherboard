@@ -79,6 +79,7 @@ def post_create(request):
 
 # dev_18 : 작성자 정보 추가
 # dev_9 : 게시글 상세보기
+@login_required
 def post_detail(request, post_id):
     post = Post.objects.get(id=post_id)
     images = post.images.all()  # 해당 게시글에 연결된 이미지들
