@@ -7,6 +7,10 @@
 
 {% block head %}
   {% include "layout/head.html" %}
+  <script src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=places&callback=initAutocomplete&language=ko" async defer></script>
+  <script>
+    window.GOOGLE_API_KEY = "{{ google_api_key }}";
+  </script>
 {% endblock head %}
 
 {% block navi %}
@@ -17,11 +21,16 @@
   <div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-5">
       <h4 class="m-0">날씨</h4>
-      <div class="d-flex gap-2">
-        <select class="form-select w-auto" id="sido-select"></select>
-        <select class="form-select w-auto" id="sigungu-select"></select>
-        <select class="form-select w-auto" id="dong-select"></select>
-        <button class="btn btn-primary">검색</button>
+      <div class="d-flex gap-2 align-items-center">
+        <input
+          id="location-search"
+          class="form-control"
+          type="text"
+          placeholder="장소 검색"
+          style="width: 300px;"
+          readonly
+        />
+        
       </div>
     </div>
 
@@ -96,24 +105,22 @@
       container.appendChild(card);
     });
 
-    btnPrev.disabled = startIndex === 0;
-    btnNext.disabled = startIndex + visibleCount >= weatherData.length;
+    
   }
 
   window.renderCards = renderCards;
 
-  //  이전 버튼
+  // 좌우 버튼 클릭 시 startIndex 조정
   btnPrev.addEventListener("click", () => {
     if (startIndex > 0) {
-      startIndex -= 1;
+      startIndex -= visibleCount;
       renderCards();
     }
   });
 
-  //  다음 버튼
   btnNext.addEventListener("click", () => {
     if (startIndex + visibleCount < weatherData.length) {
-      startIndex += 1;
+      startIndex += visibleCount;
       renderCards();
     }
   });
@@ -137,16 +144,77 @@
     });
   }
 
-  // 페이지 로딩 시: 주소 json 불러오기 + 요약 날씨 렌더링만 실행
-  document.addEventListener("DOMContentLoaded", () => {
-    fetch("/static/json/address_data.json")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("주소 데이터:", data);
-      })
-      .catch((error) => {
-        console.error("주소 데이터를 불러오는 데 실패했습니다:", error);
+  function extractHourNumber(hourString) {
+    const match = hourString.match(/^(\d{1,2})시$/);  // "1시" ~ "23시"까지 처리
+    if (!match) return null;
+
+    return parseInt(match[1], 10);
+  }
+
+  // 장소 검색 자동완성
+  window.initAutocomplete = function () {
+      const input = document.getElementById("location-search");
+      
+      input.addEventListener("click", () => {
+        input.removeAttribute("readonly");         // 잠깐 readonly 해제
+        input.focus();                             // 포커스 줌
+        const keyboardEvent = new KeyboardEvent("keydown", { key: " " });
+        input.dispatchEvent(keyboardEvent);        // 스페이스 키 입력 흉내
       });
+
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        componentRestrictions: { country: "kr" }  // 대한민국만 검색 가능
+      });
+      autocomplete.setFields(["geometry", "name"]);
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (!place || !place.geometry) {
+          alert("장소를 찾을 수 없습니다.");
+          return;
+        }
+
+        const lat = place.geometry.location.lat();
+        const lon = place.geometry.location.lng();
+        const name = place.name;
+
+        document.querySelector("h4").textContent = `${name} 날씨`;
+
+        const { x, y } = convertToGrid(lat, lon);
+        getWeatherForecast(
+          x,
+          y,
+          `${window.KMA_SHORT_ENDPOINT}/getVilageFcst`,
+          window.KMA_SHORT_KEY,
+          `${window.KMA_MID_ENDPOINT}/getMidTa`,
+          window.KMA_MID_KEY,
+          function (result) {
+            console.log("받아온 데이터 ↓↓↓");
+            console.log(result);
+
+            const now = new Date();
+            const currentHour = now.getHours();
+
+            const future = result.filter(item => {
+              const hourNum = extractHourNumber(item.hour);
+              console.log("hour 확인:", item.hour, "→", hourNum);
+              return hourNum !== null && hourNum >= currentHour;
+            });
+
+            const past = result.filter(item => {
+              const hourNum = extractHourNumber(item.hour);
+              return hourNum !== null && hourNum < currentHour;
+            });
+
+            weatherData = [...future, ...past];
+            renderCards();
+          }
+        );
+      });
+    };
+
+  // 페이지 로딩 시 요약 날씨 렌더링만 실행
+  document.addEventListener("DOMContentLoaded", () => {
 
     renderDailySummary();    // 요일 요약 날씨 렌더링
   });
@@ -179,8 +247,25 @@
         `${window.KMA_MID_ENDPOINT}/getMidTa`,
         window.KMA_MID_KEY,
         function(result) {
-          // 받아온 데이터 저장하고 렌더링
-          weatherData = result;
+          console.log("받아온 데이터 ↓↓↓");
+          console.log(result);  // <= 이게 안 뜬다면 진짜 이상한 거고, 이게 뜨면 구조를 확인 가능
+          
+          const now = new Date();
+          const currentHour = now.getHours();
+          
+          // item 구조 먼저 확인 후 filter 하자
+          const future = result.filter(item => {
+            const hourNum = extractHourNumber(item.hour);
+            console.log("hour 확인:", item.hour, "→", hourNum);
+            return hourNum !== null && hourNum >= currentHour;
+          });
+
+          const past = result.filter(item => {
+            const hourNum = extractHourNumber(item.hour);
+            return hourNum !== null && hourNum < currentHour;
+          });
+          weatherData = [...future, ...past];  // 정렬된 결과로 덮어쓰기
+
           renderCards();
         }
       );

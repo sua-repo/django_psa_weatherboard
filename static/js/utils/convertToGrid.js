@@ -40,3 +40,5 @@ export function convertToGrid(lat, lon) {
   
     return { x, y };
   }
+
+  

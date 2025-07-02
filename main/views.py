@@ -14,6 +14,7 @@ import ssl
 # dev_5
 def index(request):
     context = {
+        "google_api_key": settings.GOOGLE_API_KEY,
         "naver_client_id": settings.NAVER_API_CLIENT_ID,
         "naver_client_secret": settings.NAVER_API_CLIENT_SECRET,
         "kma_short_endpoint": settings.KMA_SHORT_ENDPOINT,
@@ -148,18 +149,18 @@ def get_weather(request):
 
         for time, data in sorted(grouped.items()):
             hour = int(time[:2])
-            hour_diff = (hour - now_hour) % 24
-            if 1 <= hour_diff <= 6:
-                temp = f"{data.get('TMP')}°C"
-                sky = data.get("SKY", "1")
-                pop = int(data.get("POP", 0))
 
-                if pop >= 30:
-                    icon = "🌧️"
-                else:
-                    icon = {"1": "☀️", "3": "🌤️", "4": "☁️"}.get(sky, "☀️")
+            # 시간 제한을 없애고 전체 다 가져오기
+            temp = f"{data.get('TMP')}°C"
+            sky = data.get("SKY", "1")
+            pop = int(data.get("POP", 0))
 
-                result.append({"hour": f"{hour}시", "temp": temp, "icon": icon})
+            if pop >= 30:
+                icon = "🌧️"
+            else:
+                icon = {"1": "☀️", "3": "🌤️", "4": "☁️"}.get(sky, "☀️")
+
+            result.append({"hour": f"{hour}시", "temp": temp, "icon": icon})
 
         return JsonResponse({"weather": result})
 

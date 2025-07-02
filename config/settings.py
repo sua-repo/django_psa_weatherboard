@@ -17,6 +17,8 @@ from dotenv import load_dotenv
 # dev_5
 load_dotenv()
 
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
 NAVER_API_CLIENT_ID = os.getenv("NAVER_API_CLIENT_ID")
 NAVER_API_CLIENT_SECRET = os.getenv("NAVER_API_CLIENT_SECRET")
 
