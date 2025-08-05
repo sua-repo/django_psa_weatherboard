@@ -1,0 +1,7 @@
+.pac-container {
+    z-index: 9999 !important; /* 자동완성 목록 항상 위로 */
+}
+
+#location-search {
+  width: 300px;
+}

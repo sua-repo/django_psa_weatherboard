@@ -1,3 +1,5 @@
+import json
+from collections import defaultdict
 from django.http import JsonResponse
 from django.shortcuts import render
 import requests
@@ -6,6 +8,7 @@ from config import settings
 
 from requests.adapters import HTTPAdapter
 import ssl
+from time import sleep
 
 # Create your views here.
 
@@ -86,84 +89,168 @@ def get_base_time(now):
     return base_date, base_time
 
 
-def get_weather(request):
+# 중기예보 발표 시각 기준 함수 (06시/18시 기준)
+def get_mid_tmFc(now):
+    base_time = now.replace(minute=0, second=0, microsecond=0)
+    if now.hour < 6:
+        base_time = base_time - timedelta(days=1)
+        base_time = base_time.replace(hour=18)
+    elif now.hour < 18:
+        base_time = base_time.replace(hour=6)
+    else:
+        base_time = base_time.replace(hour=18)
+    return base_time.strftime("%Y%m%d%H00")
 
-    print("📡 요청 방식:", request.method)
-    print("📦 요청 GET:", request.GET)
+
+def get_weather(request):
+    print("📡 [get_weather] 요청 방식:", request.method)
+    print("📦 [get_weather] 요청 파라미터:", request.GET)
 
     x = request.GET.get("x")
     y = request.GET.get("y")
-
-    endpoint = settings.KMA_SHORT_ENDPOINT
-    key = settings.KMA_SHORT_KEY  # 디코딩된 원본 키
-
     now = datetime.now()
+
     base_date, base_time = get_base_time(now)
 
-    params = {
-        "serviceKey": key,
-        "pageNo": 1,
-        "numOfRows": 1000,
-        "dataType": "JSON",
-        "base_date": base_date,
-        "base_time": base_time,
-        "nx": x,
-        "ny": y,
-    }
-
+    # -----------------------------
+    # 1. 단기예보
+    # -----------------------------
+    short_result = []
     try:
-        # 여기부터 TLS 강제 설정된 세션으로 요청
-        session = requests.Session()
-        session.mount("https://", TLSAdapter())  # TLS 보안 설정 덮어쓰기
+        print("🔍 [단기예보] 요청 준비 중...")
+        short_endpoint = settings.KMA_SHORT_ENDPOINT
+        short_key = settings.KMA_SHORT_KEY
 
-        response = session.get(endpoint, params=params, timeout=(3, 10))
+        short_params = {
+            "serviceKey": short_key,
+            "pageNo": 1,
+            "numOfRows": 1000,
+            "dataType": "JSON",
+            "base_date": base_date,
+            "base_time": base_time,
+            "nx": x,
+            "ny": y,
+        }
 
-        print("🔑 최종 요청 URL:", response.url)
-        print("🧾 응답 상태 코드:", response.status_code)
-        print("📦 응답 본문 (텍스트):", response.text[:500])
+        short_session = requests.Session()
+        short_session.mount("https://", TLSAdapter())
+        short_response = short_session.get(
+            short_endpoint, params=short_params, timeout=(3, 10)
+        )
 
-        data = response.json()
+        print("🌐 [단기예보] 요청 URL:", short_response.url)
 
-        if data["response"]["header"]["resultCode"] != "00":
-            return JsonResponse({"error": "기상청 데이터가 없습니다."}, status=404)
+        short_data = short_response.json()
+        if short_data["response"]["header"]["resultCode"] != "00":
+            print("⚠️ [단기예보] 결과 코드가 00이 아님")
+            return JsonResponse({"error": "단기예보 데이터가 없습니다."}, status=404)
 
-        body = data["response"].get("body")
-        if not body:
-            return JsonResponse({"error": "body가 비어 있습니다."}, status=404)
-
-        items = body["items"]["item"]
-        print("📍 날씨 아이템 개수:", len(items))
-
-        if not items:
-            return JsonResponse({"error": "예보 아이템이 없습니다."}, status=404)
-
-        from collections import defaultdict
+        short_items = short_data["response"]["body"]["items"]["item"]
+        print("📍 [단기예보] 아이템 개수:", len(short_items))
 
         grouped = defaultdict(dict)
-        for item in items:
+        for item in short_items:
             if item["category"] in ["TMP", "SKY", "POP"]:
                 grouped[item["fcstTime"]][item["category"]] = item["fcstValue"]
 
-        now_hour = int(now.strftime("%H"))
-        result = []
-
         for time, data in sorted(grouped.items()):
             hour = int(time[:2])
-
-            # 시간 제한을 없애고 전체 다 가져오기
             temp = f"{data.get('TMP')}°C"
             sky = data.get("SKY", "1")
             pop = int(data.get("POP", 0))
 
-            if pop >= 30:
-                icon = "🌧️"
-            else:
-                icon = {"1": "☀️", "3": "🌤️", "4": "☁️"}.get(sky, "☀️")
+            icon = "🌧️" if pop >= 30 else {"1": "☀️", "3": "🌤️", "4": "☁️"}.get(sky, "☀️")
+            short_result.append({"hour": f"{hour}시", "temp": temp, "icon": icon})
 
-            result.append({"hour": f"{hour}시", "temp": temp, "icon": icon})
-
-        return JsonResponse({"weather": result})
+        print("✅ [단기예보] 처리 완료")
 
     except Exception as e:
-        print("❌ 예외 발생:", e)
-        return JsonResponse({"error": str(e)}, status=500)
+        print("❌ [단기예보] 예외 발생:", e)
+        return JsonResponse({"error": f"단기예보 오류: {str(e)}"}, status=500)
+
+    # -----------------------------
+    # 2. 중기예보
+    # -----------------------------
+    mid_result = {}
+    try:
+        print("🔍 [중기예보] 요청 준비 중...")
+        region_id = "11H20201"
+        mid_key = settings.KMA_MID_KEY
+        mid_endpoint = settings.KMA_MID_ENDPOINT + "/getMidTa"
+        tmFc = get_mid_tmFc(now)
+
+        mid_params = {
+            "serviceKey": mid_key,
+            "pageNo": 1,
+            "numOfRows": 1000,
+            "dataType": "JSON",
+            "regId": region_id,
+            "tmFc": tmFc,
+        }
+
+        for attempt in range(3):
+            try:
+                mid_session = requests.Session()
+                mid_session.mount("https://", TLSAdapter())
+                mid_response = mid_session.get(
+                    mid_endpoint, params=mid_params, timeout=(3, 15)
+                )
+
+                print("🌐 [중기예보] 요청 URL:", mid_response.url)
+
+                if not mid_response.text.strip():
+                    raise ValueError("중기예보 응답이 비어 있음")
+
+                mid_data = mid_response.json()
+
+                result_code = mid_data["response"]["header"]["resultCode"]
+                result_msg = mid_data["response"]["header"].get("resultMsg", "")
+                print("📋 [중기예보] 결과 코드:", result_code)
+                print("📋 [중기예보] 결과 메시지:", result_msg)
+
+                if result_code != "00":
+                    print("⚠️ [중기예보] 결과 코드가 00이 아님")
+                    mid_result = {}
+                    break  # ❗ 반드시 break
+                else:
+                    mid_items = mid_data["response"]["body"]["items"]["item"]
+                    if not mid_items:
+                        raise ValueError("중기예보 항목이 비어 있음")
+                    mid = mid_items[0]
+                    mid_result = {
+                        f"taMin{i}": mid.get(f"taMin{i}") for i in range(3, 9)
+                    }
+                    mid_result.update(
+                        {f"taMax{i}": mid.get(f"taMax{i}") for i in range(3, 9)}
+                    )
+
+                    print("✅ [중기예보] 처리 완료")
+                    break  # 성공했으니 반복 종료
+
+            except (
+                requests.exceptions.Timeout,
+                requests.exceptions.RequestException,
+            ) as e:
+                print(f"⏳ [중기예보] {attempt+1}회차 요청 실패:", e)
+                sleep(1)
+
+        else:
+            print("❌ [중기예보] 3회 시도 실패. 빈 값으로 반환")
+            mid_result = {}
+
+    except Exception as e:
+        print("❌ [중기예보] 예외 발생:", e)
+        mid_result = {}
+
+    # -----------------------------
+    # 3. 최종 응답
+    # -----------------------------
+    print("📤 [get_weather] 최종 응답 반환")
+    return JsonResponse(
+        {
+            "weather": {
+                "short": short_result,
+                "mid": mid_result,
+            }
+        }
+    )

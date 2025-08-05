@@ -2,8 +2,13 @@
 
 {% block title %}내 정보 수정{% endblock title %}
 
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+{% endblock extra_css %}
+
+
 {% block content %}
-<div class="container my-5" style="max-width: 500px;">
+<div class="container my-5 edit-user-form">
     <h2 class="text-center mb-4">내 정보 수정</h2>
 
     {% if messages %}

@@ -7,28 +7,11 @@
 
 {% block head %}
     {% include "layout/head.html" %}
-    <style>
-        .preview-item {
-        width: 150px;
-        position: relative;
-        }
-        .preview-img {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 10px;
-        border: 1px solid #dee2e6;
-        }
-        .delete-btn {
-        position: absolute;
-        top: 0;
-        right: 0;
-        transform: translate(50%, -50%);
-        padding: 2px 6px;
-        font-size: 12px;
-        }
-    </style>
 {% endblock head %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/board.css' %}">
+{% endblock extra_css %}
 
 {% block navi %}
   {% include "layout/navbar.html" %}
@@ -62,8 +45,8 @@
                 <!-- 기존 이미지 -->
                 {% for image in images %}
                     <div class="position-relative" data-image-id="{{ image.id }}">
-                    <img src="{{ image.image.url }}" style="width: 150px; height: 150px; object-fit: cover;" class="rounded">
-                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0" style="transform: translate(50%, -50%);" onclick="removeExistingImage({{ image.id }})">X</button>
+                    <img src="{{ image.image.url }}" class="rounded post-edit-image">
+                    <button ... class="btn btn-danger btn-sm position-absolute top-0 end-0 image-remove-btn">X</button>
                     </div>
                 {% endfor %}
             </div>
@@ -117,20 +100,15 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const wrapper = document.createElement('div');
-                wrapper.className = 'position-relative';
-                wrapper.style.width = '150px';
+                wrapper.className = 'post-edit-image-wrapper';
 
                 const img = document.createElement('img');
                 img.src = e.target.result;
-                img.style.width = '150px';
-                img.style.height = '150px';
-                img.style.objectFit = 'cover';
-                img.className = "rounded";
+                img.className = "post-edit-image rounded";
 
                 const deleteBtn = document.createElement('button');
                 deleteBtn.textContent = 'X';
-                deleteBtn.className = 'btn btn-danger btn-sm position-absolute top-0 end-0';
-                deleteBtn.style.transform = 'translate(50%, -50%)';
+                deleteBtn.className = 'btn btn-danger btn-sm position-absolute top-0 end-0 image-remove-btn';
                 deleteBtn.addEventListener('click', () => {
                     selectedFiles.splice(index, 1);
                     renderPreviews();

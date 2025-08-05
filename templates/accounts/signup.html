@@ -5,93 +5,11 @@
 
 {% block head %}
     {% include "layout/head.html" %}
-    <style>
-        /* 로그인/회원가입 폼 통일 스타일 */
-        .signup-form {
-            max-width: 400px;
-            margin: 80px auto;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .signup-form h1 {
-            font-size: 32px;
-            margin-bottom: 40px;
-        }
-
-        .int-area {
-            position: relative;
-            margin-bottom: 30px;
-        }
-
-        .int-area input, .int-area select {
-            width: 100%;
-            padding: 20px 10px 10px;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid #000;
-            font-size: 18px;
-            outline: none;
-        }
-
-        .int-area label {
-            position: absolute;
-            top: 15px;
-            left: 10px;
-            font-size: 18px;
-            transition: 0.5s;
-            pointer-events: none;
-        }
-
-        .int-area input:focus + label,
-        .int-area input:valid + label,
-        .int-area select:focus + label,
-        .int-area select:valid + label,
-        .int-area input.active + label {
-            top: -5px;
-            font-size: 13px;
-            color: #166caa;
-        }
-
-        .fixed-label {
-            display: block;
-            font-size: 13px;
-            color: #166caa;
-            margin-bottom: -10px; /* label을 input과 살짝 겹치게 */
-            text-align: left;
-            padding-left: 10px;
-            position: relative;
-            top: -10px; /* label을 더 위로 띄우기 */
-        }
-
-        .btn-area {
-            margin-top: 30px;
-        }
-
-        .btn-area button {
-            width: 100%;
-            height: 50px;
-            background-color: #e3f2fd;
-            border: 1px solid #e3f2fd;
-            border-radius: 20px;
-            color: #166caa;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .caption {
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        .caption a {
-            color: #166caa;
-            text-decoration: none;
-            margin: 0 10px;
-        }
-    </style>
 {% endblock head %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+{% endblock extra_css %}
 
 {% block navi %}
     {% include "layout/navbar.html" %}

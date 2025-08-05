@@ -6,29 +6,11 @@
 
 {% block head %}
     {% include "layout/head.html" %}
-    <style>
-        .btn-custom-blue {
-            background-color: #add8e6;
-            color: #2a4d69;
-            border: none;
-        }
-        .btn-custom-blue:hover {
-            opacity: 0.9;
-        }
-
-        /* 페이지네이션 현재 페이지 스타일 */
-        .page-item.active .page-link {
-            background-color: #add8e6;
-            border-color: #add8e6;
-            color: #2a4d69;
-        }
-
-        /* 페이지네이션 기본 버튼 hover 스타일 */
-        .page-link:hover {
-            background-color: #e6f0ff;
-        }
-    </style>
 {% endblock head %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+{% endblock extra_css %}
 
 {% block content %}
 <div class="container my-5">
@@ -39,7 +21,7 @@
 
     <!-- 셀렉트박스 따로 아래로 -->
     <div class="d-flex justify-content-end mb-2">
-        <select id="filterSelect" class="form-select form-select-sm" style="width: 150px;">
+        <select id="filterSelect" class="form-select form-select-sm  mypage-select">
             <option value="all" selected>전체</option>
             <option value="posts">내가 쓴 글</option>
             <option value="comments">내가 쓴 댓글</option>

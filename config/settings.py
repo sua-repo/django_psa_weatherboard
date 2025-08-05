@@ -26,7 +26,7 @@ KMA_SHORT_ENDPOINT = os.getenv("KMA_SHORT_ENDPOINT")
 KMA_SHORT_KEY = os.getenv("KMA_SHORT_DECODED_KEY")
 
 KMA_MID_ENDPOINT = os.getenv("KMA_MID_ENDPOINT")
-KMA_MID_KEY = os.getenv("KMA_MID_ENCODED_KEY")
+KMA_MID_KEY = os.getenv("KMA_MID_DECODED_KEY")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "game",  # dev_3 : 게임 앱 추가
     "board",  # dev_6 : 게시판 앱 추가
     "accounts",  # dev_14 : 회원 앱 추가
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
@@ -157,3 +158,6 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 # dev_17
 LOGIN_URL = "accounts:login_user"
+
+# dev_20
+APPEND_SLASH = True

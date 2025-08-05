@@ -1,0 +1,47 @@
+/* static/css/game.css */
+
+/* 공통 */
+.rsp-card {
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.rsp-card .card-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.rsp-footer {
+  min-height: 40px;
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-img-top {
+  height: 300px;
+  object-fit: contain;
+}
+
+/* 로또 전용 */
+.lotto-wrapper {
+  min-height: 50vh;
+}
+
+#lottoArea {
+  cursor: pointer;
+}
+
+.lotto-ball {
+  width: 100px;
+  height: 100px;
+  font-size: 36px;
+  cursor: pointer;
+  user-select: none; /* 텍스트 선택 막기 */
+}

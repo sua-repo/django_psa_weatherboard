@@ -8,50 +8,11 @@
 
 {% block head %}
     {% include "layout/head.html" %}
-    <style>
-        .comment-section {
-            border-top: 2px solid #eee;
-            padding-top: 20px;
-            margin-top: 40px;
-        }
-
-        /* 버튼 커스텀 */
-        .btn-custom-green {
-            background-color: #b5e7a0;
-            color: #2d572c;
-            border: none;
-        }
-        .btn-custom-red {
-            background-color: #f7c6c7;
-            color: #a94442;
-            border: none;
-        }
-        .btn-custom-gray {
-            background-color: #d6d6d6;
-            color: #555;
-            border: none;
-        }
-        .btn-custom-blue {
-            background-color: #add8e6;
-            color: #2a4d69;
-            border: none;
-        }
-        .btn-custom-green:hover,
-        .btn-custom-red:hover,
-        .btn-custom-gray:hover,
-        .btn-custom-blue:hover {
-            opacity: 0.9;
-        }
-
-        .btn-outline-primary:hover {
-            background-color: #e6f0ff;
-        }
-        
-        .btn-outline-warning:hover {
-            background-color: #e6f0ff;
-        }
-    </style>
 {% endblock head %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/board.css' %}">
+{% endblock extra_css %}
 
 {% block navi %}
   {% include "layout/navbar.html" %}
@@ -62,7 +23,7 @@
     <div class="container my-5">
         <div class="d-flex justify-content-between align-items-center mt-4">
             <div class="d-flex align-items-center gap-2">
-                <h2 class="text-muted" style="font-size: 1.1rem;">[{{ post.category }}]</h2>
+                <h2 class="text-muted post-category">[{{ post.category }}]</h2>
                 <h2>{{ post.title }}</h2>
             </div>
             <div class="d-flex align-items-center gap-2">
@@ -99,13 +60,13 @@
 
         <div class="d-flex flex-wrap gap-3 mt-4">
             {% for image in images %}
-            <img src="{{ image.image.url }}" style="width: 200px; height: 200px; object-fit: cover;" class="rounded">
+            <img src="{{ image.image.url }}" class="post-image rounded">
             {% empty %}
             <!--<p class="text-muted">첨부된 이미지가 없습니다.</p>-->
             {% endfor %}
         </div>
 
-        <form method="post" action="{% url 'board:post_like' post.id %}" style="display: inline;">
+        <form method="post" action="{% url 'board:post_like' post.id %}" class="d-inline">
             {% csrf_token %}
             {% if not user.is_authenticated or request.user == post.author %}
                 <button type="submit" class="btn btn-outline-secondary" disabled>
@@ -147,7 +108,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <img id="preview" src="#" alt="미리보기" style="display: none; max-width: 300px; margin-top: 10px;">
+                        <img id="preview" src="#" alt="미리보기" class="comment-preview-img">
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">
@@ -186,7 +147,7 @@
 
                     {% if comment.image %}
                         <div class="mt-2">
-                            <img src="{{ comment.image.url }}" style="width: 100px; height: 100px; object-fit: cover;" class="rounded">
+                            <img src="{{ comment.image.url }}" class="comment-image rounded">
                         </div>
                     {% endif %}
 

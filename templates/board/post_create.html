@@ -9,6 +9,11 @@
   {% include "layout/head.html" %}
 {% endblock head %}
 
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/board.css' %}">
+{% endblock extra_css %}
+
+
 {% block navi %}
   {% include "layout/navbar.html" %}
 {% endblock navi %}
@@ -78,20 +83,15 @@ function renderPreviews() {
         const reader = new FileReader();
         reader.onload = function(e) {
             const wrapper = document.createElement('div');
-            wrapper.className = 'position-relative';
-            wrapper.style.width = '150px';
+            wrapper.className = 'image-wrapper';
 
             const img = document.createElement('img');
             img.src = e.target.result;
-            img.style.width = '150px';
-            img.style.height = '150px';
-            img.style.objectFit = 'cover';
-            img.className = "rounded";
+            img.className = "img-preview";
 
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = 'X';
             deleteBtn.className = 'btn btn-danger btn-sm position-absolute top-0 end-0';
-            deleteBtn.style.transform = 'translate(50%, -50%)';
             deleteBtn.addEventListener('click', () => {
                 selectedFiles.splice(index, 1);
                 renderPreviews();

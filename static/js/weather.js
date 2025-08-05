@@ -1,9 +1,10 @@
 // static/js/weather.js
 
 // dev_20 
-export async function getWeatherForecast(x, y, shortUrl, shortKey, midUrl, midKey, onSuccess) {
+export async function getWeatherForecast(x, y, onSuccess) {
   try {
-    const response = await fetch(`/get-weather/?x=${x}&y=${y}`);
+    const params = new URLSearchParams({ x, y });
+    const response = await fetch(`/get-weather/?${params}`);
     const data = await response.json();
 
     if (data.weather) {

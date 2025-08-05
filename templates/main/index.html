@@ -7,10 +7,17 @@
 
 {% block head %}
   {% include "layout/head.html" %}
+
+  <!-- Google Maps API (Places + Autocomplete용) -->
   <script src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=places&callback=initAutocomplete&language=ko" async defer></script>
+  
   <script>
     window.GOOGLE_API_KEY = "{{ google_api_key }}";
   </script>
+  
+  {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+  {% endblock extra_css %}
 {% endblock head %}
 
 {% block navi %}
@@ -27,8 +34,6 @@
           class="form-control"
           type="text"
           placeholder="장소 검색"
-          style="width: 300px;"
-          readonly
         />
         
       </div>
@@ -65,218 +70,5 @@
     window.KMA_MID_KEY = "{{ kma_mid_key }}";
   </script>
 
-  <script type="module">
-  // 필요한 모듈 import
-  import { convertToGrid } from "{% static 'js/utils/convertToGrid.js' %}";
-  import { getWeatherForecast } from "{% static 'js/weather.js' %}";
-
-  // 요일 리스트 생성 (오늘 기준 +1~+6일)
-  const now = new Date();
-  const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
-  const today = now.getDay();
-  const days = Array.from({ length: 6 }, (_, i) => daysOfWeek[(today + i + 1) % 7]);
-
-
-  // 슬라이드 관련 설정값
-  let startIndex = 0;
-  const visibleCount = 6;
-
-  const container = document.getElementById("weather-cards");
-  const btnPrev = document.getElementById("btn-prev");
-  const btnNext = document.getElementById("btn-next");
-
-  // 날씨 데이터 전역 변수로 선언 (API로 받아온 결과를 담을 곳)
-  let weatherData = [];
-
-  // 시간별 날씨 카드 렌더링 함수
-  function renderCards() {
-    container.innerHTML = "";
-    const sliced = weatherData.slice(startIndex, startIndex + visibleCount);
-    sliced.forEach(item => {
-      const card = document.createElement("div");
-      card.className = "text-center border rounded shadow-sm p-4 bg-light";
-      card.style.minWidth = "120px";
-      card.style.height = "140px";
-      card.innerHTML = `
-        <div style="font-size: 32px;">${item.icon}</div>
-        <div style="font-size: 18px;">${item.temp}</div>
-        <div style="font-size: 16px;">${item.hour}</div>
-      `;
-      container.appendChild(card);
-    });
-
-    
-  }
-
-  window.renderCards = renderCards;
-
-  // 좌우 버튼 클릭 시 startIndex 조정
-  btnPrev.addEventListener("click", () => {
-    if (startIndex > 0) {
-      startIndex -= visibleCount;
-      renderCards();
-    }
-  });
-
-  btnNext.addEventListener("click", () => {
-    if (startIndex + visibleCount < weatherData.length) {
-      startIndex += visibleCount;
-      renderCards();
-    }
-  });
-
-  // 요일 요약 날씨 박스 렌더링
-  function renderDailySummary() {
-    const container = document.getElementById("daily-summary");
-    container.innerHTML = "";
-
-    days.forEach(day => {
-      const div = document.createElement("div");
-      div.className = "border rounded p-3 text-center";
-      div.style.width = "140px";
-      div.innerHTML = `
-        <div style="font-weight: bold;">${day}요일</div>
-        <div style="font-size: 24px;">🌥️</div>
-        <div>최고 18°C</div>
-        <div>최저 9°C</div>
-      `;
-      container.appendChild(div);
-    });
-  }
-
-  function extractHourNumber(hourString) {
-    const match = hourString.match(/^(\d{1,2})시$/);  // "1시" ~ "23시"까지 처리
-    if (!match) return null;
-
-    return parseInt(match[1], 10);
-  }
-
-  // 장소 검색 자동완성
-  window.initAutocomplete = function () {
-      const input = document.getElementById("location-search");
-      
-      input.addEventListener("click", () => {
-        input.removeAttribute("readonly");         // 잠깐 readonly 해제
-        input.focus();                             // 포커스 줌
-        const keyboardEvent = new KeyboardEvent("keydown", { key: " " });
-        input.dispatchEvent(keyboardEvent);        // 스페이스 키 입력 흉내
-      });
-
-      const autocomplete = new google.maps.places.Autocomplete(input, {
-        componentRestrictions: { country: "kr" }  // 대한민국만 검색 가능
-      });
-      autocomplete.setFields(["geometry", "name"]);
-
-      autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-        if (!place || !place.geometry) {
-          alert("장소를 찾을 수 없습니다.");
-          return;
-        }
-
-        const lat = place.geometry.location.lat();
-        const lon = place.geometry.location.lng();
-        const name = place.name;
-
-        document.querySelector("h4").textContent = `${name} 날씨`;
-
-        const { x, y } = convertToGrid(lat, lon);
-        getWeatherForecast(
-          x,
-          y,
-          `${window.KMA_SHORT_ENDPOINT}/getVilageFcst`,
-          window.KMA_SHORT_KEY,
-          `${window.KMA_MID_ENDPOINT}/getMidTa`,
-          window.KMA_MID_KEY,
-          function (result) {
-            console.log("받아온 데이터 ↓↓↓");
-            console.log(result);
-
-            const now = new Date();
-            const currentHour = now.getHours();
-
-            const future = result.filter(item => {
-              const hourNum = extractHourNumber(item.hour);
-              console.log("hour 확인:", item.hour, "→", hourNum);
-              return hourNum !== null && hourNum >= currentHour;
-            });
-
-            const past = result.filter(item => {
-              const hourNum = extractHourNumber(item.hour);
-              return hourNum !== null && hourNum < currentHour;
-            });
-
-            weatherData = [...future, ...past];
-            renderCards();
-          }
-        );
-      });
-    };
-
-  // 페이지 로딩 시 요약 날씨 렌더링만 실행
-  document.addEventListener("DOMContentLoaded", () => {
-
-    renderDailySummary();    // 요일 요약 날씨 렌더링
-  });
-
-  // 사용자의 위도, 경도 좌표 가져오기
-  navigator.geolocation.getCurrentPosition(
-    function(position) {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-
-      // 위도, 경도를 동 단위 주소로 변경 (네이버 API)
-      fetch(`/get-address?lat=${lat}&lon=${lon}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.results && data.results.length > 0) {
-            const dong = data.results[0].region.area3.name;
-            document.querySelector("h4").textContent = `${dong} 날씨`;
-          }
-        });
-
-      // 위도, 경도를 기상청용 격자 좌표로 변환
-      const { x, y } = convertToGrid(lat, lon);
-
-      // getWeatherForecast가 결과를 return 또는 콜백으로 전달하는 구조라고 가정하고 사용
-      getWeatherForecast(
-        x,
-        y,
-        `${window.KMA_SHORT_ENDPOINT}/getVilageFcst`,
-        window.KMA_SHORT_KEY,
-        `${window.KMA_MID_ENDPOINT}/getMidTa`,
-        window.KMA_MID_KEY,
-        function(result) {
-          console.log("받아온 데이터 ↓↓↓");
-          console.log(result);  // <= 이게 안 뜬다면 진짜 이상한 거고, 이게 뜨면 구조를 확인 가능
-          
-          const now = new Date();
-          const currentHour = now.getHours();
-          
-          // item 구조 먼저 확인 후 filter 하자
-          const future = result.filter(item => {
-            const hourNum = extractHourNumber(item.hour);
-            console.log("hour 확인:", item.hour, "→", hourNum);
-            return hourNum !== null && hourNum >= currentHour;
-          });
-
-          const past = result.filter(item => {
-            const hourNum = extractHourNumber(item.hour);
-            return hourNum !== null && hourNum < currentHour;
-          });
-          weatherData = [...future, ...past];  // 정렬된 결과로 덮어쓰기
-
-          renderCards();
-        }
-      );
-
-    },
-    function(error) {
-      console.error("위치 정보를 가져올 수 없습니다.", error);
-    }
-  );
-
-
-</script>
-
+  <script type="module" src="{% static 'js/index.js' %}"></script>
 {% endblock script %}

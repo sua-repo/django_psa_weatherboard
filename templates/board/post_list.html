@@ -8,31 +8,11 @@
 
 {% block head %}
     {% include "layout/head.html" %}
-    <style>
-        /* 검색 버튼 스타일 */
-        .btn-custom-blue {
-            background-color: #add8e6;
-            color: #2a4d69;
-            border: none;
-        }
-
-        .btn-custom-blue:hover {
-            opacity: 0.9;
-        }
-
-        /* 페이지네이션 현재 페이지 스타일 */
-        .page-item.active .page-link {
-            background-color: #add8e6;
-            border-color: #add8e6;
-            color: #2a4d69;
-        }
-
-        /* 페이지네이션 기본 버튼 hover 스타일 (선택사항) */
-        .page-link:hover {
-            background-color: #e6f0ff;
-        }
-    </style>
 {% endblock head %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/board.css' %}">
+{% endblock extra_css %}
 
 {% block navi %}
   {% include "layout/navbar.html" %}
@@ -52,8 +32,8 @@
                     </select>
 
                     <!-- 검색창 추가 -->
-                    <input type="text" name="search" class="form-control form-control-sm w-auto" 
-                        placeholder="검색어 입력" value="{{ search_query|default_if_none:'' }}" style="width: 150px;">
+                    <input type="text" name="search" class="form-control form-control-sm w-auto search-input" 
+                        placeholder="검색어 입력" value="{{ search_query|default_if_none:'' }}">
                     <button type="submit" class="btn btn-custom-blue ms-2">검색</button>
                 </form>
                 <a href="{% url 'board:post_create' %}" class="btn btn-custom-blue ms-3">글 작성</a>
@@ -66,14 +46,14 @@
                 <a href="{% url 'board:post_detail' post.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div class="py-4">
                         <span class="text-muted">[{{ post.category }}]</span>
-                        <span class="ms-1 fw-semibold" style="font-size: 18px;">{{ post.title }}
+                        <span class="ms-1 fw-semibold post-title">{{ post.title }}
                             {% if post.comments.count > 0 %}
                                 <span class="text-muted fw-normal">({{ post.comments.count }})</span>
                             {% endif %}
                         </span>
                     </div>
 
-                    <div class="d-flex align-items-center justify-content-end gap-2" style="min-width: 250px;">
+                    <div class="d-flex align-items-center justify-content-end gap-2 post-meta">
                         <small class="text-muted">{{ post.author.username }}</small>
 
                         {% if post.updated_at != post.created_at %}

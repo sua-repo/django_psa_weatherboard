@@ -1,0 +1,9 @@
+
+html {
+    overflow-y: scroll;
+}
+
+/* navbar 관련 스타일 */
+.navbar-custom {
+  background-color: #e3f2fd;
+}
