@@ -1,7 +1,7 @@
 // static/js/index.js
 
 import { convertToGrid } from "./utils/convertToGrid.js";
-import { getWeatherForecast } from "./weather.js";
+import { getWeatherForecast } from "./utils/weather.js";
 
 const now = new Date();
 const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
