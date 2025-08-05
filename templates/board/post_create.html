@@ -43,10 +43,14 @@
     </div>
 
     <div class="mb-3">
-        <label for="image" class="form-label">사진 첨부</label>
-        <input type="file" name="images" id="image" class="form-control" multiple>
+        <!-- 감춘 input -->
+        <input type="file" name="images" id="image" class="d-none" multiple>
 
-        
+        <!-- 커스텀 버튼과 텍스트 -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <label for="image" class="btn btn-outline-secondary">파일 선택</label>
+          <span id="file-count" class="text-muted">선택된 파일: 0개</span>
+        </div>
 
         <!-- 미리보기용 이미지 -->
         <div id="preview-container" class="mt-3 d-flex flex-wrap gap-2"></div>
@@ -71,8 +75,17 @@ let selectedFiles = [];  // 선택한 파일들을 저장하는 배열
 document.getElementById('image').addEventListener('change', function(event) {
     const newFiles = Array.from(event.target.files);  // 새로 선택한 파일들
     selectedFiles = selectedFiles.concat(newFiles);    // 기존 배열에 추가
+
+    // input 초기화 (같은 파일 다시 선택 가능하게)
+    event.target.value = "";
+    
     renderPreviews();
 });
+
+function updateFileCount() {
+  const count = selectedFiles.length;
+  document.getElementById('file-count').textContent = `선택된 파일: ${count}개`;
+}
 
 // 미리보기 다시 그리는 함수
 function renderPreviews() {
@@ -103,6 +116,7 @@ function renderPreviews() {
         };
         reader.readAsDataURL(file);
     });
+    updateFileCount();  // 파일 개수 갱신
 }
 
 document.getElementById('post-form').addEventListener('submit', function(event) {
