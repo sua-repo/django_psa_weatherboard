@@ -58,6 +58,10 @@
     margin-top: 40px;
 }
 
+.form-inline {
+    display: inline;
+}
+
 .post-category {
   font-size: 1.1rem;
 }

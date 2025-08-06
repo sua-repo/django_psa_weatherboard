@@ -1,7 +1,6 @@
 # dev_6
-from django.db import models
 from django.contrib.auth.models import User
-
+from django.db import models
 
 # Create your models here.
 
@@ -28,7 +27,7 @@ class Post(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField(null=True, blank=True)   # dev_11
+    content = models.TextField(null=True, blank=True)  # dev_11
     image = models.ImageField(
         upload_to="comment_images/", blank=True, null=True
     )  # dev_11

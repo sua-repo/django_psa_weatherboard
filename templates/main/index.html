@@ -14,11 +14,11 @@
   <script>
     window.GOOGLE_API_KEY = "{{ google_api_key }}";
   </script>
-  
-  {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
-  {% endblock extra_css %}
 {% endblock head %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+{% endblock extra_css %}
 
 {% block navi %}
   {% include "layout/navbar.html" %}
@@ -39,7 +39,7 @@
       </div>
     </div>
 
-    <div id="weather-words" class="text-center mb-5 text-muted" style="font-size: 20px;">
+    <div id="weather-words" class="text-center mb-5 text-muted">
       오늘은 어제보다 낮 기온이 10도 높고 따뜻한 날이에요. 가벼운 옷차림 추천드려요!
     </div>
 

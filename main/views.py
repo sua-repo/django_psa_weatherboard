@@ -1,14 +1,15 @@
 import json
+import ssl
 from collections import defaultdict
+from datetime import datetime, timedelta
+from time import sleep
+
+import requests
 from django.http import JsonResponse
 from django.shortcuts import render
-import requests
-from datetime import datetime, timedelta
-from config import settings
-
 from requests.adapters import HTTPAdapter
-import ssl
-from time import sleep
+
+from config import settings
 
 # Create your views here.
 
@@ -135,7 +136,7 @@ def get_weather(request):
         short_session = requests.Session()
         short_session.mount("https://", TLSAdapter())
         short_response = short_session.get(
-            short_endpoint, params=short_params, timeout=(3, 10)
+            short_endpoint, params=short_params, timeout=(5, 15)
         )
 
         print("🌐 [단기예보] 요청 URL:", short_response.url)
@@ -193,7 +194,7 @@ def get_weather(request):
                 mid_session = requests.Session()
                 mid_session.mount("https://", TLSAdapter())
                 mid_response = mid_session.get(
-                    mid_endpoint, params=mid_params, timeout=(3, 15)
+                    mid_endpoint, params=mid_params, timeout=(5, 15)
                 )
 
                 print("🌐 [중기예보] 요청 URL:", mid_response.url)

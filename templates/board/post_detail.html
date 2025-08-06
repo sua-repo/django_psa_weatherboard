@@ -79,7 +79,7 @@
             {% endif %}
         </form>
 
-        <form method="post" action="{% url 'board:post_scrap' post.id %}" style="display: inline;">
+        <form method="post" action="{% url 'board:post_scrap' post.id %}" class="form-inline">
             {% csrf_token %}
             {% if not user.is_authenticated or request.user == post.author %}
                 <button type="submit" class="btn btn-outline-secondary" disabled>
