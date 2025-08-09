@@ -62,6 +62,30 @@
     6. 웹 브라우저 접속
         http://127.0.0.1:8000/
 
+## 🌐 URL-View 매핑표
+| URL 경로                                    | View 함수          | 앱        | name             | 설명                |
+| ----------------------------------------- | ---------------- | -------- | ---------------- | ----------------- |
+| `/`                                       | `index`          | main     | `index`          | 홈 화면              |
+| `/get-address/`                           | `get_address`    | main     | `get_address`    | 위도·경도 → 주소 변환 API |
+| `/get-weather/`                           | `get_weather`    | main     | `get_weather`    | 날씨 데이터 가져오기 API   |
+| `/board/`                                 | `post_list`      | board    | `post_list`      | 게시글 목록            |
+| `/board/create/`                          | `post_create`    | board    | `post_create`    | 게시글 작성            |
+| `/board/<int:post_id>/`                   | `post_detail`    | board    | `post_detail`    | 게시글 상세 보기         |
+| `/board/update/<int:post_id>/`            | `post_update`    | board    | `post_update`    | 게시글 수정            |
+| `/board/delete/<int:post_id>/`            | `post_delete`    | board    | `post_delete`    | 게시글 삭제            |
+| `/board/comment/<int:post_id>/`           | `comment_create` | board    | `comment_create` | 댓글 작성             |
+| `/board/comment/update/<int:comment_id>/` | `comment_update` | board    | `comment_update` | 댓글 수정             |
+| `/board/comment/delete/<int:comment_id>/` | `comment_delete` | board    | `comment_delete` | 댓글 삭제             |
+| `/board/post/<int:post_id>/like/`         | `post_like`      | board    | `post_like`      | 게시글 추천            |
+| `/board/post/<int:post_id>/scrap/`        | `post_scrap`     | board    | `post_scrap`     | 게시글 스크랩           |
+| `/accounts/login/`                        | `login_user`     | accounts | `login_user`     | 로그인               |
+| `/accounts/logout/`                       | `logout_user`    | accounts | `logout_user`    | 로그아웃              |
+| `/accounts/signup/`                       | `signup_user`    | accounts | `signup_user`    | 회원가입              |
+| `/accounts/mypage/`                       | `mypage`         | accounts | `mypage`         | 마이페이지             |
+| `/accounts/edit/`                         | `edit_user`      | accounts | `edit_user`      | 마이페이지 정보 수정       |
+| `/game/rsp/`                              | `rsp`            | game     | `rsp`            | 가위바위보 게임          |
+| `/game/lotto/`                            | `lotto`          | game     | `lotto`          | 로또 번호 추첨          |
+
 ## 📚 자세한 설명
 
 👉 [노션 문서에서 확인하기](https://www.notion.so/Weather-Board-242f8c4af472804c9739f337016609d0)
